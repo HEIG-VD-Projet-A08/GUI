@@ -5,16 +5,19 @@
     <name>ProtProp</name>
     <message>
         <location filename="protprop.ui" line="14"/>
+        <location filename="cmake-build-debug/ProtProp_autogen/include/ui_protprop.h" line="65"/>
         <source>ProtProp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="protprop.ui" line="27"/>
+        <location filename="cmake-build-debug/ProtProp_autogen/include/ui_protprop.h" line="66"/>
         <source>Upload Data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="protprop.ui" line="53"/>
+        <location filename="cmake-build-debug/ProtProp_autogen/include/ui_protprop.h" line="68"/>
         <source>Run</source>
         <translation type="unfinished"></translation>
     </message>
