@@ -14,20 +14,7 @@
    <string>ProtProp</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton_4">
-    <property name="geometry">
-     <rect>
-      <x>1119</x>
-      <y>50</y>
-      <width>151</width>
-      <height>23</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Load parameters</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="widget" native="true">
+   <widget class="QCustomPlot" name="widget" native="true">
     <property name="geometry">
      <rect>
       <x>20</x>
@@ -37,32 +24,46 @@
      </rect>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>490</x>
       <y>640</y>
-      <width>621</width>
+      <width>767</width>
       <height>25</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
-      <widget class="QPushButton" name="pushButton_3">
+      <widget class="QPushButton" name="load_param">
        <property name="text">
-        <string>Save Result</string>
+        <string>charger les paramètres</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="plot">
        <property name="text">
-        <string>Save actual state </string>
+        <string>Màj graphique</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="btn_save_res">
+       <property name="text">
+        <string>sauvegarde des résultats</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_save_actual">
+       <property name="text">
+        <string>sauvegarde de l'état actuel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_stop">
        <property name="text">
         <string>Stop</string>
        </property>
@@ -77,7 +78,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -88,13 +89,6 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QPushButton" name="btn_loadDB">
-       <property name="text">
-        <string>Upload Data</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
         <widget class="QLabel" name="label">
@@ -104,7 +98,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit"/>
+        <widget class="QLineEdit" name="nbWords"/>
        </item>
       </layout>
      </item>
@@ -118,7 +112,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_2"/>
+        <widget class="QLineEdit" name="CharMax"/>
        </item>
       </layout>
      </item>
@@ -132,7 +126,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_4"/>
+        <widget class="QLineEdit" name="iterations"/>
        </item>
       </layout>
      </item>
@@ -146,7 +140,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLineEdit" name="lineEdit_3"/>
+        <widget class="QLineEdit" name="IP"/>
        </item>
       </layout>
      </item>
@@ -160,7 +154,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="lineEdit_6"/>
+        <widget class="QLineEdit" name="carac"/>
        </item>
       </layout>
      </item>
@@ -185,6 +179,14 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCustomPlot</class>
+   <extends>QWidget</extends>
+   <header>qcustomplot.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
