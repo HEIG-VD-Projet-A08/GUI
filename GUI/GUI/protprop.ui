@@ -147,7 +147,18 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="comboBox"/>
+        <widget class="QComboBox" name="comboBox">
+         <item>
+          <property name="text">
+           <string>Localisation</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Toxicité</string>
+          </property>
+         </item>
+        </widget>
        </item>
       </layout>
      </item>
