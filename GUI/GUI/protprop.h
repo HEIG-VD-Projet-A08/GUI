@@ -17,10 +17,13 @@ public:
     ~ProtProp();
 
 private slots:
-    void on_btn_loadDB_clicked();
+    void on_btn_run_clicked();
 
 private:
     Ui::ProtProp *ui;
-    QString data_file;
+    QString nbWords;
+    QString nbChars;
+    QString nbIter;
+    QString ip;
 };
 #endif // PROTPROP_H

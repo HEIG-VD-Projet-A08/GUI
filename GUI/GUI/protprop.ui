@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1336</width>
-    <height>714</height>
+    <width>1309</width>
+    <height>715</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,13 +34,6 @@
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
-     <item>
-      <widget class="QPushButton" name="load_param">
-       <property name="text">
-        <string>charger les paramètres</string>
-       </property>
-      </widget>
-     </item>
      <item>
       <widget class="QPushButton" name="plot">
        <property name="text">
@@ -154,7 +147,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLineEdit" name="carac"/>
+        <widget class="QComboBox" name="comboBox"/>
        </item>
       </layout>
      </item>
@@ -166,7 +159,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1336</width>
+     <width>1309</width>
      <height>20</height>
     </rect>
    </property>
