@@ -47,6 +47,29 @@ void ProtProp::on_btn_run_clicked()
         QMessageBox::warning(0, QString("Error de saisie"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
     }else{
         QMessageBox::information(0, QString("Tout roule."), QString("Le programme va être exécuté."));
+
+
+        QString path("/home/jerome/HEIG/Labo/PRO/GUI/");
+        QDir dir;
+        // création du directory si besoin
+        if (!dir.exists(path))
+            dir.mkpath(path);
+
+        QFile file(path + "option.xml");
+
+        file.open(QIODevice::WriteOnly);
+
+        QXmlStreamWriter xmlWriter(&file);
+        xmlWriter.setAutoFormatting(true);
+        xmlWriter.writeStartDocument();
+
+        xmlWriter.writeStartElement("Options");
+        xmlWriter.writeTextElement("Nb_words", nbWords);
+        xmlWriter.writeTextElement("Nb_char", nbChars);
+        xmlWriter.writeTextElement("Nb_iter", nbIter);
+        xmlWriter.writeTextElement("caracteristique", caract);
+        xmlWriter.writeEndElement();
+        file.close();
     }
 }
 
