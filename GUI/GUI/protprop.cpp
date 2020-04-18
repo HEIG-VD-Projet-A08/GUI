@@ -9,6 +9,7 @@ ProtProp::ProtProp(QWidget *parent)
     // set validators for input
     QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("[0-9][0-9][0-9]"));
     QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("[0-9][0-9][0-9][0-9][0-9]"));
+    QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
     // set possibility for menu with "localisation" as default possibility
     QStringList n;
     n << "Localisation" << "Toxicité" ;
@@ -18,6 +19,7 @@ ProtProp::ProtProp(QWidget *parent)
 
     // enable validator for each input
     ui->IP->setText("127.0.0.1");
+    ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
     ui->iterations->setValidator(inputIteration);
     ui->nbWords->setValidator(inputIteration);
@@ -28,18 +30,23 @@ ProtProp::~ProtProp()
     delete ui;
 }
 
-
+/**
+ * @brief ProtProp::on_btn_run_clicked gestion du chargement des paramètres lorsqu'on presse sur run
+ */
 void ProtProp::on_btn_run_clicked()
 {
     // load input//    nbChars = ui->CharMax->text();
         nbWords = ui->nbWords->text();
         nbChars = ui->CharMax->text();
         nbIter = ui->iterations->text();
-        //caract = ui->menu_list->currentText();
         ip = ui->IP->text();
+        caract = ui->menu_list->currentText();
 
-
-    if (nbChars == "" || nbWords == "" || nbIter == ""){
+    // test que les arguments soient tous rempli
+    if (nbChars == "" || nbWords == "" || nbIter == "" || caract == ""){
+        QMessageBox::warning(0, QString("Error de saisie"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+    }else{
+        QMessageBox::information(0, QString("Tout roule."), QString("Le programme va être exécuté."));
     }
 }
 
