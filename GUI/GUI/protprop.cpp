@@ -23,6 +23,7 @@ ProtProp::ProtProp(QWidget *parent)
     ui->CharMax->setValidator(inputNumberChar);
     ui->iterations->setValidator(inputIteration);
     ui->nbWords->setValidator(inputIteration);
+    qDebug() << "App path : " << qApp->applicationDirPath();
 }
 
 ProtProp::~ProtProp()
@@ -44,18 +45,12 @@ void ProtProp::on_btn_run_clicked()
 
     // test que les arguments soient tous rempli
     if (nbChars == "" || nbWords == "" || nbIter == "" || caract == ""){
-        QMessageBox::warning(0, QString("Error de saisie"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+        QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
     }else{
-        QMessageBox::information(0, QString("Tout roule."), QString("Le programme va être exécuté."));
-
-
-        QString path("/home/jerome/HEIG/Labo/PRO/GUI/");
+        // écriture du fichier XML dans le dossier de l'application
         QDir dir;
-        // création du directory si besoin
-        if (!dir.exists(path))
-            dir.mkpath(path);
-
-        QFile file(path + "option.xml");
+        QString path(dir.currentPath());
+        QFile file(path + "/option.xml");
 
         file.open(QIODevice::WriteOnly);
 
@@ -68,7 +63,14 @@ void ProtProp::on_btn_run_clicked()
         xmlWriter.writeTextElement("Nb_char", nbChars);
         xmlWriter.writeTextElement("Nb_iter", nbIter);
         xmlWriter.writeTextElement("caracteristique", caract);
+        xmlWriter.writeTextElement("add_ip", ip);
         xmlWriter.writeEndElement();
+        // test si une erreur est survenue pendant l'écriture du fichier xml
+        if(xmlWriter.hasError()){
+            QMessageBox::warning(0, QString("Erreur de saisie"), QString("Problème lors de la génération du fichier de configuration"));
+        }else{
+            QMessageBox::information(0, QString("Tout roule."), QString("Le programme va être exécuté."));
+        }
         file.close();
     }
 }
