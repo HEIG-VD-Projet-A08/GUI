@@ -10,15 +10,20 @@
 #define UI_PROTPROP_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QFormLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
+#include "qcustomplot.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -26,96 +31,169 @@ class Ui_ProtProp
 {
 public:
     QWidget *centralwidget;
-    QPushButton *btn_loadDB;
+    QCustomPlot *widget;
+    QWidget *layoutWidget;
+    QHBoxLayout *horizontalLayout_6;
+    QPushButton *plot;
+    QPushButton *btn_save_res;
+    QPushButton *btn_save_actual;
+    QPushButton *btn_stop;
     QPushButton *btn_run;
-    QLineEdit *lineEdit;
-    QPushButton *pushButton;
-    QPushButton *pushButton_2;
-    QPushButton *pushButton_3;
-    QLabel *label;
-    QLineEdit *lineEdit_2;
-    QLabel *label_2;
-    QLineEdit *lineEdit_3;
-    QLineEdit *lineEdit_4;
-    QLabel *label_3;
-    QLabel *label_4;
-    QWidget *widget;
+    QWidget *layoutWidget1;
     QHBoxLayout *horizontalLayout;
+    QHBoxLayout *horizontalLayout_5;
+    QLabel *label;
+    QLineEdit *nbWords;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_2;
+    QLineEdit *CharMax;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label_4;
+    QLineEdit *iterations;
+    QHBoxLayout *horizontalLayout_2;
+    QLabel *label_3;
+    QLineEdit *IP;
+    QFormLayout *formLayout;
     QLabel *label_6;
-    QLineEdit *lineEdit_6;
+    QComboBox *menu_list;
     QMenuBar *menubar;
+    QMenu *menuTest;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *ProtProp)
     {
         if (ProtProp->objectName().isEmpty())
             ProtProp->setObjectName(QString::fromUtf8("ProtProp"));
-        ProtProp->resize(1336, 714);
+        ProtProp->resize(1309, 715);
         centralwidget = new QWidget(ProtProp);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-        btn_loadDB = new QPushButton(centralwidget);
-        btn_loadDB->setObjectName(QString::fromUtf8("btn_loadDB"));
-        btn_loadDB->setGeometry(QRect(20, 10, 91, 22));
-        btn_run = new QPushButton(centralwidget);
-        btn_run->setObjectName(QString::fromUtf8("btn_run"));
-        btn_run->setGeometry(QRect(1180, 620, 80, 22));
-        lineEdit = new QLineEdit(centralwidget);
-        lineEdit->setObjectName(QString::fromUtf8("lineEdit"));
-        lineEdit->setGeometry(QRect(1060, 60, 231, 23));
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setGeometry(QRect(1080, 620, 80, 23));
-        pushButton_2 = new QPushButton(centralwidget);
-        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
-        pushButton_2->setGeometry(QRect(679, 640, 141, 23));
-        pushButton_3 = new QPushButton(centralwidget);
-        pushButton_3->setObjectName(QString::fromUtf8("pushButton_3"));
-        pushButton_3->setGeometry(QRect(570, 640, 80, 23));
-        label = new QLabel(centralwidget);
-        label->setObjectName(QString::fromUtf8("label"));
-        label->setGeometry(QRect(870, 60, 131, 16));
-        lineEdit_2 = new QLineEdit(centralwidget);
-        lineEdit_2->setObjectName(QString::fromUtf8("lineEdit_2"));
-        lineEdit_2->setGeometry(QRect(1060, 100, 231, 23));
-        label_2 = new QLabel(centralwidget);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
-        label_2->setGeometry(QRect(870, 100, 161, 16));
-        lineEdit_3 = new QLineEdit(centralwidget);
-        lineEdit_3->setObjectName(QString::fromUtf8("lineEdit_3"));
-        lineEdit_3->setGeometry(QRect(1060, 180, 231, 23));
-        lineEdit_4 = new QLineEdit(centralwidget);
-        lineEdit_4->setObjectName(QString::fromUtf8("lineEdit_4"));
-        lineEdit_4->setGeometry(QRect(1060, 140, 231, 23));
-        label_3 = new QLabel(centralwidget);
-        label_3->setObjectName(QString::fromUtf8("label_3"));
-        label_3->setGeometry(QRect(870, 180, 161, 16));
-        label_4 = new QLabel(centralwidget);
-        label_4->setObjectName(QString::fromUtf8("label_4"));
-        label_4->setGeometry(QRect(870, 140, 131, 16));
-        widget = new QWidget(centralwidget);
+        widget = new QCustomPlot(centralwidget);
         widget->setObjectName(QString::fromUtf8("widget"));
-        widget->setGeometry(QRect(870, 230, 225, 25));
-        horizontalLayout = new QHBoxLayout(widget);
+        widget->setGeometry(QRect(20, 50, 1271, 571));
+        layoutWidget = new QWidget(centralwidget);
+        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
+        layoutWidget->setGeometry(QRect(490, 640, 767, 25));
+        horizontalLayout_6 = new QHBoxLayout(layoutWidget);
+        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
+        horizontalLayout_6->setContentsMargins(0, 0, 0, 0);
+        plot = new QPushButton(layoutWidget);
+        plot->setObjectName(QString::fromUtf8("plot"));
+
+        horizontalLayout_6->addWidget(plot);
+
+        btn_save_res = new QPushButton(layoutWidget);
+        btn_save_res->setObjectName(QString::fromUtf8("btn_save_res"));
+
+        horizontalLayout_6->addWidget(btn_save_res);
+
+        btn_save_actual = new QPushButton(layoutWidget);
+        btn_save_actual->setObjectName(QString::fromUtf8("btn_save_actual"));
+
+        horizontalLayout_6->addWidget(btn_save_actual);
+
+        btn_stop = new QPushButton(layoutWidget);
+        btn_stop->setObjectName(QString::fromUtf8("btn_stop"));
+
+        horizontalLayout_6->addWidget(btn_stop);
+
+        btn_run = new QPushButton(layoutWidget);
+        btn_run->setObjectName(QString::fromUtf8("btn_run"));
+
+        horizontalLayout_6->addWidget(btn_run);
+
+        layoutWidget1 = new QWidget(centralwidget);
+        layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(10, 10, 1269, 27));
+        horizontalLayout = new QHBoxLayout(layoutWidget1);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         horizontalLayout->setContentsMargins(0, 0, 0, 0);
-        label_6 = new QLabel(widget);
+        horizontalLayout_5 = new QHBoxLayout();
+        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
+        label = new QLabel(layoutWidget1);
+        label->setObjectName(QString::fromUtf8("label"));
+
+        horizontalLayout_5->addWidget(label);
+
+        nbWords = new QLineEdit(layoutWidget1);
+        nbWords->setObjectName(QString::fromUtf8("nbWords"));
+
+        horizontalLayout_5->addWidget(nbWords);
+
+
+        horizontalLayout->addLayout(horizontalLayout_5);
+
+        horizontalLayout_4 = new QHBoxLayout();
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        label_2 = new QLabel(layoutWidget1);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+
+        horizontalLayout_4->addWidget(label_2);
+
+        CharMax = new QLineEdit(layoutWidget1);
+        CharMax->setObjectName(QString::fromUtf8("CharMax"));
+
+        horizontalLayout_4->addWidget(CharMax);
+
+
+        horizontalLayout->addLayout(horizontalLayout_4);
+
+        horizontalLayout_3 = new QHBoxLayout();
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        label_4 = new QLabel(layoutWidget1);
+        label_4->setObjectName(QString::fromUtf8("label_4"));
+
+        horizontalLayout_3->addWidget(label_4);
+
+        iterations = new QLineEdit(layoutWidget1);
+        iterations->setObjectName(QString::fromUtf8("iterations"));
+
+        horizontalLayout_3->addWidget(iterations);
+
+
+        horizontalLayout->addLayout(horizontalLayout_3);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        label_3 = new QLabel(layoutWidget1);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
+
+        horizontalLayout_2->addWidget(label_3);
+
+        IP = new QLineEdit(layoutWidget1);
+        IP->setObjectName(QString::fromUtf8("IP"));
+
+        horizontalLayout_2->addWidget(IP);
+
+
+        horizontalLayout->addLayout(horizontalLayout_2);
+
+        formLayout = new QFormLayout();
+        formLayout->setObjectName(QString::fromUtf8("formLayout"));
+        label_6 = new QLabel(layoutWidget1);
         label_6->setObjectName(QString::fromUtf8("label_6"));
 
-        horizontalLayout->addWidget(label_6);
+        formLayout->setWidget(0, QFormLayout::LabelRole, label_6);
 
-        lineEdit_6 = new QLineEdit(widget);
-        lineEdit_6->setObjectName(QString::fromUtf8("lineEdit_6"));
+        menu_list = new QComboBox(layoutWidget1);
+        menu_list->setObjectName(QString::fromUtf8("menu_list"));
 
-        horizontalLayout->addWidget(lineEdit_6);
+        formLayout->setWidget(0, QFormLayout::FieldRole, menu_list);
+
+
+        horizontalLayout->addLayout(formLayout);
 
         ProtProp->setCentralWidget(centralwidget);
         menubar = new QMenuBar(ProtProp);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 1336, 20));
+        menubar->setGeometry(QRect(0, 0, 1309, 20));
+        menuTest = new QMenu(menubar);
+        menuTest->setObjectName(QString::fromUtf8("menuTest"));
         ProtProp->setMenuBar(menubar);
         statusbar = new QStatusBar(ProtProp);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
         ProtProp->setStatusBar(statusbar);
+
+        menubar->addAction(menuTest->menuAction());
 
         retranslateUi(ProtProp);
 
@@ -125,16 +203,17 @@ public:
     void retranslateUi(QMainWindow *ProtProp)
     {
         ProtProp->setWindowTitle(QCoreApplication::translate("ProtProp", "ProtProp", nullptr));
-        btn_loadDB->setText(QCoreApplication::translate("ProtProp", "Upload Data", nullptr));
+        plot->setText(QCoreApplication::translate("ProtProp", "M\303\240j graphique", nullptr));
+        btn_save_res->setText(QCoreApplication::translate("ProtProp", "sauvegarde des r\303\251sultats", nullptr));
+        btn_save_actual->setText(QCoreApplication::translate("ProtProp", "sauvegarde de l'\303\251tat actuel", nullptr));
+        btn_stop->setText(QCoreApplication::translate("ProtProp", "Stop", nullptr));
         btn_run->setText(QCoreApplication::translate("ProtProp", "Run", nullptr));
-        pushButton->setText(QCoreApplication::translate("ProtProp", "Stop", nullptr));
-        pushButton_2->setText(QCoreApplication::translate("ProtProp", "Save actual state ", nullptr));
-        pushButton_3->setText(QCoreApplication::translate("ProtProp", "Save Result", nullptr));
         label->setText(QCoreApplication::translate("ProtProp", "Nombre de mots ", nullptr));
         label_2->setText(QCoreApplication::translate("ProtProp", "Nombre maximum de chars ", nullptr));
-        label_3->setText(QCoreApplication::translate("ProtProp", "Adresse IP", nullptr));
         label_4->setText(QCoreApplication::translate("ProtProp", "It\303\251rations", nullptr));
+        label_3->setText(QCoreApplication::translate("ProtProp", "Adresse IP", nullptr));
         label_6->setText(QCoreApplication::translate("ProtProp", "Caract\303\251ristique", nullptr));
+        menuTest->setTitle(QCoreApplication::translate("ProtProp", "Test", nullptr));
     } // retranslateUi
 
 };

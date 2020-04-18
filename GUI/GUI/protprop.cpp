@@ -1,5 +1,6 @@
 #include "protprop.h"
 #include "./ui_protprop.h"
+#include<QRegExpValidator>
 
 ProtProp::ProtProp(QWidget *parent)
     : QMainWindow(parent)
@@ -8,10 +9,11 @@ ProtProp::ProtProp(QWidget *parent)
     // set validators for input
     QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("[0-9][0-9][0-9]"));
     QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("[0-9][0-9][0-9][0-9][0-9]"));
-
     // set possibility for menu with "localisation" as default possibility
     QStringList n;
     n << "Localisation" << "Toxicité" ;
+
+    ui->setupUi(this);
     ui->menu_list->addItems(n);
 
     // enable validator for each input
@@ -19,8 +21,6 @@ ProtProp::ProtProp(QWidget *parent)
     ui->CharMax->setValidator(inputNumberChar);
     ui->iterations->setValidator(inputIteration);
     ui->nbWords->setValidator(inputIteration);
-
-    ui->setupUi(this);
 }
 
 ProtProp::~ProtProp()
@@ -31,34 +31,15 @@ ProtProp::~ProtProp()
 
 void ProtProp::on_btn_run_clicked()
 {
-    // load input
-    nbChars = ui->CharMax->text();
-    nbWords = ui->nbWords->text();
-    nbIter = ui->iterations->text();
-    caract = ui->menu_list->currentText();
-    ip = ui->IP->text();
+    // load input//    nbChars = ui->CharMax->text();
+        nbWords = ui->nbWords->text();
+        nbChars = ui->CharMax->text();
+        nbIter = ui->iterations->text();
+        //caract = ui->menu_list->currentText();
+        ip = ui->IP->text();
+
 
     if (nbChars == "" || nbWords == "" || nbIter == ""){
     }
-}
-
-void ProtProp::on_btn_stop_clicked()
-{
-
-}
-
-void ProtProp::on_btn_save_actual_clicked()
-{
-
-}
-
-void ProtProp::on_btn_save_res_clicked()
-{
-
-}
-
-void ProtProp::on_plot_clicked()
-{
-
 }
 

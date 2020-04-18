@@ -25,5 +25,6 @@ private:
     QString nbChars;
     QString nbIter;
     QString ip;
+    QString caract;
 };
 #endif // PROTPROP_H
