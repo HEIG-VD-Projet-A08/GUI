@@ -52,11 +52,13 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = ../GUI/main.cpp \
+SOURCES       = ../GUI/clienttcp.cpp \
+		../GUI/main.cpp \
 		../GUI/protprop.cpp \
 		../GUI/qcustomplot.cpp moc_protprop.cpp \
 		moc_qcustomplot.cpp
-OBJECTS       = main.o \
+OBJECTS       = clienttcp.o \
+		main.o \
 		protprop.o \
 		qcustomplot.o \
 		moc_protprop.o \
@@ -281,8 +283,10 @@ DIST          = /usr/lib/qt/mkspecs/features/spec_pre.prf \
 		/usr/lib/qt/mkspecs/features/exceptions.prf \
 		/usr/lib/qt/mkspecs/features/yacc.prf \
 		/usr/lib/qt/mkspecs/features/lex.prf \
-		../GUI/GUI.pro ../GUI/protprop.h \
-		../GUI/qcustomplot.h ../GUI/main.cpp \
+		../GUI/GUI.pro ../GUI/clienttcp.h \
+		../GUI/protprop.h \
+		../GUI/qcustomplot.h ../GUI/clienttcp.cpp \
+		../GUI/main.cpp \
 		../GUI/protprop.cpp \
 		../GUI/qcustomplot.cpp
 QMAKE_TARGET  = GUI
@@ -754,8 +758,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../GUI/protprop.h ../GUI/qcustomplot.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../GUI/main.cpp ../GUI/protprop.cpp ../GUI/qcustomplot.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../GUI/clienttcp.h ../GUI/protprop.h ../GUI/qcustomplot.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../GUI/clienttcp.cpp ../GUI/main.cpp ../GUI/protprop.cpp ../GUI/qcustomplot.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../GUI/protprop.ui $(DISTDIR)/
 
 
@@ -823,12 +827,14 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_ui
 
 ####### Compile
 
+clienttcp.o: ../GUI/clienttcp.cpp ../GUI/clienttcp.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o clienttcp.o ../GUI/clienttcp.cpp
+
 main.o: ../GUI/main.cpp ../GUI/protprop.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../GUI/main.cpp
 
 protprop.o: ../GUI/protprop.cpp ../GUI/protprop.h \
-		ui_protprop.h \
-		../GUI/qcustomplot.h
+		ui_protprop.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o protprop.o ../GUI/protprop.cpp
 
 qcustomplot.o: ../GUI/qcustomplot.cpp ../GUI/qcustomplot.h

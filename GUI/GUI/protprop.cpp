@@ -21,9 +21,14 @@ ProtProp::ProtProp(QWidget *parent)
     ui->IP->setText("127.0.0.1");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
+    // TODO : à enlever en cas de test automatique
+    ui->CharMax->setText("100");
     ui->iterations->setValidator(inputIteration);
+    // TODO : à enlever en cas de test automatique
+    ui->iterations->setText("11");
     ui->nbWords->setValidator(inputIteration);
-    qDebug() << "App path : " << qApp->applicationDirPath();
+    // TODO : à enlever en cas de test automatique
+    ui->nbWords->setText("10");
 }
 
 ProtProp::~ProtProp()
@@ -52,6 +57,7 @@ void ProtProp::on_btn_run_clicked()
         QString path(dir.currentPath());
         QFile file(path + "/option.xml");
 
+        // partie client TCP
         file.open(QIODevice::WriteOnly);
 
         QXmlStreamWriter xmlWriter(&file);
@@ -73,19 +79,37 @@ void ProtProp::on_btn_run_clicked()
         }
         file.close();
 
+        // partie client TCP
+        QTcpSocket *Socket = new QTcpSocket( this );
 
-        QTcpSocket *_pSocket;
-
-        _pSocket = new QTcpSocket( this );
         file.open(QIODevice::ReadOnly);
         QByteArray mydata=file.readAll();
 
-        _pSocket->connectToHost(ip, 9000);
-        if( _pSocket->waitForConnected() ) {
-            _pSocket->write( mydata );
+        Socket->connectToHost(ip, 9000);
+
+        // greeting from client
+        if( Socket->waitForConnected() ) {
+            Socket->write( "Hello Server" );
+            Socket->flush();
+        }
+
+        while(Socket->waitForReadyRead()){
+            QByteArray ba = Socket->readLine();
+            printf("from server: %s", ba.constData());
+            // TODO : à enlever en cas de test automatique
+            //ba.remove(ba.size() -1, 1);
+            if(ba == "Hello Client"){
+                break;
+            }
+        }
+
+        if( Socket->waitForConnected() ) {
+            Socket->write( "START" );
+            Socket->write( mydata );
+            Socket->flush();
         }
         file.close();
-        _pSocket->disconnectFromHost();
+        Socket->disconnectFromHost();
     }
 }
 

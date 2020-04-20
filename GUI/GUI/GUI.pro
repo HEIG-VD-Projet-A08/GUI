@@ -15,11 +15,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    clienttcp.cpp \
     main.cpp \
     protprop.cpp \
     qcustomplot.cpp
 
 HEADERS += \
+    clienttcp.h \
     protprop.h \
     qcustomplot.h
 
