@@ -72,6 +72,20 @@ void ProtProp::on_btn_run_clicked()
             QMessageBox::information(0, QString("Tout roule."), QString("Le programme va être exécuté."));
         }
         file.close();
+
+
+        QTcpSocket *_pSocket;
+
+        _pSocket = new QTcpSocket( this );
+        file.open(QIODevice::ReadOnly);
+        QByteArray mydata=file.readAll();
+
+        _pSocket->connectToHost(ip, 9000);
+        if( _pSocket->waitForConnected() ) {
+            _pSocket->write( mydata );
+        }
+        file.close();
+        _pSocket->disconnectFromHost();
     }
 }
 

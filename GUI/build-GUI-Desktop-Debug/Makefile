@@ -14,10 +14,10 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_PRINTSUPPORT_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++11 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I../GUI -I. -isystem /usr/include/qt -isystem /usr/include/qt/QtPrintSupport -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtCore -I. -I. -I/usr/lib/qt/mkspecs/linux-g++
+INCPATH       = -I../GUI -I. -isystem /usr/include/qt -isystem /usr/include/qt/QtPrintSupport -isystem /usr/include/qt/QtWidgets -isystem /usr/include/qt/QtGui -isystem /usr/include/qt/QtNetwork -isystem /usr/include/qt/QtCore -I. -I. -I/usr/lib/qt/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -40,7 +40,7 @@ DISTNAME      = GUI1.0.0
 DISTDIR = /home/jerome/HEIG/Labo/PRO/GUI/GUI/build-GUI-Desktop-Debug/.tmp/GUI1.0.0
 LINK          = g++
 LFLAGS        = 
-LIBS          = $(SUBLIBS) /usr/lib/libQt5PrintSupport.so /usr/lib/libQt5Widgets.so /usr/lib/libQt5Gui.so /usr/lib/libQt5Core.so -lGL -lpthread   
+LIBS          = $(SUBLIBS) /usr/lib/libQt5PrintSupport.so /usr/lib/libQt5Widgets.so /usr/lib/libQt5Gui.so /usr/lib/libQt5Network.so /usr/lib/libQt5Core.so -lGL -lpthread   
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -794,12 +794,12 @@ compiler_moc_header_clean:
 moc_protprop.cpp: ../GUI/protprop.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include /home/jerome/HEIG/Labo/PRO/GUI/GUI/build-GUI-Desktop-Debug/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/jerome/HEIG/Labo/PRO/GUI/GUI/GUI -I/usr/include/qt -I/usr/include/qt/QtPrintSupport -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include ../GUI/protprop.h -o moc_protprop.cpp
+	/usr/bin/moc $(DEFINES) --include /home/jerome/HEIG/Labo/PRO/GUI/GUI/build-GUI-Desktop-Debug/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/jerome/HEIG/Labo/PRO/GUI/GUI/GUI -I/usr/include/qt -I/usr/include/qt/QtPrintSupport -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtNetwork -I/usr/include/qt/QtCore -I. -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include ../GUI/protprop.h -o moc_protprop.cpp
 
 moc_qcustomplot.cpp: ../GUI/qcustomplot.h \
 		moc_predefs.h \
 		/usr/bin/moc
-	/usr/bin/moc $(DEFINES) --include /home/jerome/HEIG/Labo/PRO/GUI/GUI/build-GUI-Desktop-Debug/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/jerome/HEIG/Labo/PRO/GUI/GUI/GUI -I/usr/include/qt -I/usr/include/qt/QtPrintSupport -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtCore -I. -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include ../GUI/qcustomplot.h -o moc_qcustomplot.cpp
+	/usr/bin/moc $(DEFINES) --include /home/jerome/HEIG/Labo/PRO/GUI/GUI/build-GUI-Desktop-Debug/moc_predefs.h -I/usr/lib/qt/mkspecs/linux-g++ -I/home/jerome/HEIG/Labo/PRO/GUI/GUI/GUI -I/usr/include/qt -I/usr/include/qt/QtPrintSupport -I/usr/include/qt/QtWidgets -I/usr/include/qt/QtGui -I/usr/include/qt/QtNetwork -I/usr/include/qt/QtCore -I. -I/usr/include/c++/9.3.0 -I/usr/include/c++/9.3.0/x86_64-pc-linux-gnu -I/usr/include/c++/9.3.0/backward -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include -I/usr/local/include -I/usr/lib/gcc/x86_64-pc-linux-gnu/9.3.0/include-fixed -I/usr/include ../GUI/qcustomplot.h -o moc_qcustomplot.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -827,7 +827,8 @@ main.o: ../GUI/main.cpp ../GUI/protprop.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../GUI/main.cpp
 
 protprop.o: ../GUI/protprop.cpp ../GUI/protprop.h \
-		ui_protprop.h
+		ui_protprop.h \
+		../GUI/qcustomplot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o protprop.o ../GUI/protprop.cpp
 
 qcustomplot.o: ../GUI/qcustomplot.cpp ../GUI/qcustomplot.h
