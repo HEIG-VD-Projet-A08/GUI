@@ -229,6 +229,11 @@ void ProtProp::on_btn_save_res_clicked()
     myFile << textToWrite;
     myFile.close();
 	
+}
+
+void ProtProp::on_plot_clicked()
+{
+
     //Resets the view (usefull if we used the drag or the zoom feature)
     ui->widget->xAxis->setRange(0, nbIter.toInt());
     ui->widget->yAxis->setRange(0, 100);
