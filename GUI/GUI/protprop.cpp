@@ -22,7 +22,7 @@ ProtProp::ProtProp(QWidget *parent)
     n << "Localisation" << "Toxicité" ;
 
     ui->setupUi(this);
-    ui->menu_list->addItems(n);
+    ui->comboBox->addItems(n);
 
     // enable validator for each input
     ui->IP->setText("127.0.0.1");
@@ -59,7 +59,7 @@ void ProtProp::on_btn_run_clicked()
 	
 	// load input//    nbChars = ui->CharMax->text();
    
-        caract = ui->menu_list->currentText();
+        caract = ui->comboBox->currentText();
 
     // test que les arguments soient tous rempli
     if (nbChars == "" || nbWords == "" || nbIter == "" || caract == ""){
