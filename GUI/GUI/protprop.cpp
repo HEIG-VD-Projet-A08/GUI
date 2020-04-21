@@ -14,7 +14,8 @@ ProtProp::ProtProp(QWidget *parent)
     , ui(new Ui::ProtProp)
 {
     // set validators for input
-    QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("[0-9][0-9][0-9]"));
+    QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
+    QRegExpValidator *inputNumberPort = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
     QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("[0-9][0-9][0-9][0-9][0-9]"));
     QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
     // set possibility for menu with "localisation" as default possibility
@@ -36,6 +37,8 @@ ProtProp::ProtProp(QWidget *parent)
     ui->nbWords->setValidator(inputIteration);
     // TODO : à enlever en cas de test automatique
     ui->nbWords->setText("10");
+    ui->port->setValidator(inputNumberPort);
+    ui->port->setText("9000");
 }
 
 ProtProp::~ProtProp()
@@ -53,7 +56,7 @@ void ProtProp::on_btn_run_clicked()
     nbWords = ui->nbWords->text();   //max around 20-50
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
-
+    port = ui->port->text();
 	
 	
 	
@@ -98,7 +101,7 @@ void ProtProp::on_btn_run_clicked()
         file.open(QIODevice::ReadOnly);
         QByteArray mydata=file.readAll();
 
-        Socket->connectToHost(ip, 9000);
+        Socket->connectToHost(ip, port.toInt());
 		
         // greeting from client
         if( Socket->waitForConnected() ) {
@@ -110,7 +113,7 @@ void ProtProp::on_btn_run_clicked()
             QByteArray ba = Socket->readLine();
             printf("from server: %s", ba.constData());
             // TODO : à enlever en cas de test automatique
-            //ba.remove(ba.size() -1, 1);
+            ba.remove(ba.size() -1, 1);
             if(ba == "Hello Client"){
                 break;
             }

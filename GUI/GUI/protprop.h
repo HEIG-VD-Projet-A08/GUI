@@ -31,6 +31,7 @@ private:
     QString nbChars;
     QString nbIter;
     QString ip;
+    QString port;
 
     QVector<double> contX, contY, contXFromServ, contYFromServ;
     QString caract;
