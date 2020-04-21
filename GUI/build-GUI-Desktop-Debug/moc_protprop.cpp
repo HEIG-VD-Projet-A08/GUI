@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_ProtProp_t {
     QByteArrayData data[3];
-    char stringdata0[32];
+    char stringdata0[29];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,11 +33,11 @@ struct qt_meta_stringdata_ProtProp_t {
 static const qt_meta_stringdata_ProtProp_t qt_meta_stringdata_ProtProp = {
     {
 QT_MOC_LITERAL(0, 0, 8), // "ProtProp"
-QT_MOC_LITERAL(1, 9, 21), // "on_btn_loadDB_clicked"
-QT_MOC_LITERAL(2, 31, 0) // ""
+QT_MOC_LITERAL(1, 9, 18), // "on_btn_run_clicked"
+QT_MOC_LITERAL(2, 28, 0) // ""
 
     },
-    "ProtProp\0on_btn_loadDB_clicked\0"
+    "ProtProp\0on_btn_run_clicked\0"
 };
 #undef QT_MOC_LITERAL
 
@@ -69,7 +69,7 @@ void ProtProp::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         auto *_t = static_cast<ProtProp *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->on_btn_loadDB_clicked(); break;
+        case 0: _t->on_btn_run_clicked(); break;
         default: ;
         }
     }

@@ -1,6 +1,5 @@
 QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport network
 
 CONFIG += c++11
 
@@ -16,11 +15,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    clienttcp.cpp \
     main.cpp \
     protprop.cpp \
     qcustomplot.cpp
 
 HEADERS += \
+    clienttcp.h \
     protprop.h \
     qcustomplot.h
 

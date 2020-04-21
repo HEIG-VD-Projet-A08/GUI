@@ -3,6 +3,9 @@
 
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QtCore>
+#include <QtNetwork>
+#include<QTcpSocket>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ProtProp; }
@@ -29,6 +32,9 @@ private:
     QString nbChars;
     QString nbIter;
     QString ip;
+
     QVector<double> contX, contY, contXFromServ, contYFromServ;
+    QString caract;
+
 };
 #endif // PROTPROP_H
