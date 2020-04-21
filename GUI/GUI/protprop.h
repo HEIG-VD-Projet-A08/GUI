@@ -25,6 +25,7 @@ private slots:
     void on_btn_stop_clicked();
     void on_btn_save_actual_clicked();
     void on_btn_save_res_clicked();
+    void on_plot_clicked();
 private:
     Ui::ProtProp *ui;
     QString nbWords;
