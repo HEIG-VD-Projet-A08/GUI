@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Option [
+	<!ELEMENT Nb_words (#PCDATA)>
+	<!ELEMENT Nb_char (#PCDATA)>
+	<!ELEMENT Nb_iter (#PCDATA)>
+	<!ELEMENT caracteristique (#PCDATA)>
+	<!ELEMENT add_ip (#PCDATA)>
+]>
