@@ -834,7 +834,8 @@ main.o: ../GUI/main.cpp ../GUI/protprop.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../GUI/main.cpp
 
 protprop.o: ../GUI/protprop.cpp ../GUI/protprop.h \
-		ui_protprop.h
+		ui_protprop.h \
+		../GUI/qcustomplot.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o protprop.o ../GUI/protprop.cpp
 
 qcustomplot.o: ../GUI/qcustomplot.cpp ../GUI/qcustomplot.h
