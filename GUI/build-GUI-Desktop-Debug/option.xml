@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Options>
-    <Nb_words>10</Nb_words>
-    <Nb_char>100</Nb_char>
-    <Nb_iter>11</Nb_iter>
-    <caracteristique>Localisation</caracteristique>
-    <add_ip>127.0.0.1</add_ip>
-</Options>
