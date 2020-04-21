@@ -15,6 +15,7 @@ class ProtProp : public QMainWindow
 public:
     ProtProp(QWidget *parent = nullptr);
     ~ProtProp();
+    void getValuesFromServer(QVector<double> contX, QVector<double> contY);
 
 private slots:
     void on_btn_run_clicked();
@@ -28,5 +29,6 @@ private:
     QString nbChars;
     QString nbIter;
     QString ip;
+    QVector<double> contX, contY, contXFromServ, contYFromServ;
 };
 #endif // PROTPROP_H
