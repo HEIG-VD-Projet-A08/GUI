@@ -29,7 +29,7 @@ ProtProp::ProtProp(QWidget *parent)
     ui->IP->setText("127.0.0.1");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
-    // TODO : à enlever en cas de test automatique        sleep(10);
+    // TODO : à enlever en cas de test automatique
     ui->CharMax->setText("100");
     ui->iterations->setValidator(inputIteration);
     // TODO : à enlever en cas de test automatique
@@ -57,6 +57,8 @@ void ProtProp::on_btn_run_clicked()
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
+	
+	
 	
 	// load input//    nbChars = ui->CharMax->text();
    
@@ -93,14 +95,11 @@ void ProtProp::on_btn_run_clicked()
         }
         file.close();
 
-        test = new ClientTcp(this, ip, port.toInt());
-		
-        test->sendGreetings();
-        test->sendData(file);
 
-//        //while (Socket->readLine() != "Hello Client");
-//        //printf("Hello Recu");
     }	
+	
+	
+	
 	
 	
     //start prog with variables above
