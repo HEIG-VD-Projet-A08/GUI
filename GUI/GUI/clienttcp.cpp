@@ -62,10 +62,6 @@ void ClientTcp::readyRead()
     QString path(dir.currentPath());
     QFile file(path + "/tmp.xml");
 
-//    double x = 5;
-//    double y = 4;
-//    ProtProp::getValuesFromServer(x, y);
-
     // partie client TCP
     file.open(QIODevice::WriteOnly);
     file.write(temp);

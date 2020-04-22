@@ -238,6 +238,7 @@ void ProtProp::on_btn_run_clicked()
         QDir dir;
         QString path(dir.currentPath());
         QFile file(path + "/tmp.xml");
+//        file.remove();
 
         x = it.toDouble();
         y = score.toDouble();
