@@ -29,7 +29,7 @@ ProtProp::ProtProp(QWidget *parent)
     ui->IP->setText("127.0.0.1");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
-    // TODO : à enlever en cas de test automatique
+    // TODO : à enlever en cas de test automatique        sleep(10);
     ui->CharMax->setText("100");
     ui->iterations->setValidator(inputIteration);
     // TODO : à enlever en cas de test automatique
@@ -57,11 +57,9 @@ void ProtProp::on_btn_run_clicked()
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-	
-	
-	
-	// load input//    nbChars = ui->CharMax->text();
-   
+
+    // load input//    nbChars = ui->CharMax->text();
+
         caract = ui->comboBox->currentText();
 
     // test que les arguments soient tous rempli
@@ -95,13 +93,14 @@ void ProtProp::on_btn_run_clicked()
         }
         file.close();
 
+        test = new ClientTcp(this, ip, port.toInt());
 
-    }	
-	
-	
-	
-	
-	
+        test->sendGreetings();
+        test->sendData(file);
+
+    }
+
+
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
     //wait for the algo to start sending us results
@@ -201,7 +200,7 @@ void ProtProp::on_btn_save_res_clicked()
 
     myFile << textToWrite;
     myFile.close();
-	
+
 }
 
 void ProtProp::on_plot_clicked()
