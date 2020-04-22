@@ -12,19 +12,11 @@ ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent){
     // partie client TCP
     socket = new QTcpSocket( parent );
     connect(socket, &QTcpSocket::readyRead,this, &ClientTcp::readyRead);
-
+    this->add = ipAdd;
+    this->port = port;
     qDebug() << "connecting...";
 
-    // this is not blocking call
     socket->connectToHost(ipAdd, port);
-
-    // we need to wait...
-    if(!socket->waitForConnected(5000))
-    {
-        qDebug() << "Error: " << socket->errorString();
-    }else{
-         socket->write( "Hello Server\n" );
-    }
 }
 
 ClientTcp::~ClientTcp(){
@@ -32,12 +24,23 @@ ClientTcp::~ClientTcp(){
 }
 
 void ClientTcp::sendGreetings(){
-
+    if(!socket->waitForConnected()){
+        qDebug() << "Error: " << socket->errorString();
+    }else{
+         socket->write( "Hello Server\n" );
+    }
 }
 
-void ClientTcp::sendData(QFile file){
+void ClientTcp::sendData(QFile &file){
     file.open(QIODevice::ReadOnly);
     QByteArray mydata=file.readAll();
+
+    socket->write( "START\n" );
+    socket->write( mydata );
+    file.close();
+    socket->disconnectFromHost();
+    while(!socket->waitForBytesWritten());
+    socket->connectToHost(add, port);
 }
 
 void ClientTcp::readyRead()
@@ -51,5 +54,5 @@ void ClientTcp::readyRead()
 
     // read the data from the socket
     QByteArray temp = socket->readAll();
-    socket->write(temp);
+    qDebug() << temp;
 }

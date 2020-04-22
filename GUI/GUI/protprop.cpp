@@ -29,7 +29,7 @@ ProtProp::ProtProp(QWidget *parent)
     ui->IP->setText("127.0.0.1");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
-    // TODO : à enlever en cas de test automatique
+    // TODO : à enlever en cas de test automatique        sleep(10);
     ui->CharMax->setText("100");
     ui->iterations->setValidator(inputIteration);
     // TODO : à enlever en cas de test automatique
@@ -38,7 +38,7 @@ ProtProp::ProtProp(QWidget *parent)
     // TODO : à enlever en cas de test automatique
     ui->nbWords->setText("10");
     ui->port->setValidator(inputNumberPort);
-    ui->port->setText("9001");
+    ui->port->setText("9000");
 }
 
 ProtProp::~ProtProp()
@@ -94,30 +94,12 @@ void ProtProp::on_btn_run_clicked()
         file.close();
 
         test = new ClientTcp(this, ip, port.toInt());
-
-//        // partie client TCP
-//        QTcpSocket *Socket = new QTcpSocket( this );
-
-//        file.open(QIODevice::ReadOnly);
-//        QByteArray mydata=file.readAll();
-
-//        Socket->connectToHost(ip, port.toInt());
 		
-//        // greeting from client
-//        if( Socket->waitForConnected() ) {
-//            Socket->write( "Hello Server\n" );
-//        }
+        test->sendGreetings();
+        test->sendData(file);
 
 //        //while (Socket->readLine() != "Hello Client");
 //        //printf("Hello Recu");
-
-//        if( Socket->waitForConnected() ) {
-//            Socket->write( "START\n" );
-//            Socket->write( mydata );
-//            Socket->flush();
-//        }
-//        file.close();
-//        //Socket->close();
     }	
 	
 	
