@@ -45,9 +45,6 @@ void ClientTcp::sendData(QFile &file){
 
 void ClientTcp::readyRead()
 {
-    qDebug() << "reading...";
-
-    // we need to wait...
     if(!socket->waitForConnected(5000)){
         qDebug() << "Error: " << socket->errorString();
     }
@@ -55,10 +52,12 @@ void ClientTcp::readyRead()
     // read the data from the socket
     QByteArray temp = socket->readAll();
     qDebug() << temp;
-
     QDir dir;
     QString path(dir.currentPath());
+
     QFile file(path + "/tmp.xml");
+    QString relativePath = path + "/tmp.xml";
+    qDebug() << "le fichier se trouve : " << relativePath;
 
     // partie client TCP
     file.open(QIODevice::WriteOnly);
