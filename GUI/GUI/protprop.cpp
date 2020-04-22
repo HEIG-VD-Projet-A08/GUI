@@ -293,7 +293,7 @@ void ProtProp::ReadXMLFile(QString &it, QString &score)
 
     QFile file;
 
-    file.setFileName("/home/reds/Desktop/temp.xml");
+    file.setFileName("/tmp.xml");
 
     while(!file.open(QFile::ReadOnly | QFile::Text))
     {
