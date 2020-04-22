@@ -6,6 +6,8 @@
 #include <sstream>
 #include <unistd.h>
 
+#include <QXmlStreamReader>
+
 #include<QRegExpValidator>
 
 
@@ -131,12 +133,8 @@ void ProtProp::on_btn_run_clicked()
 	
 	
 	
-	
-    //start prog with variables above
-    //have to send some of those informations to the server to run the algo
-    //wait for the algo to start sending us results
 
-    //then, get results in a container and show them on the graph
+
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
 
@@ -155,6 +153,7 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->replot();
 
 
+    /*
     //DUMB VALUES
     for(int i = 0; i < sizeX; i++)
     {
@@ -167,20 +166,38 @@ void ProtProp::on_btn_run_clicked()
         ui->widget->graph(0)->setData(contX, contY);
         ui->widget->replot();
     }
-
+    */
     //real code/values
-    /*
-    getValuesFromServer(contXFromServ, contYFromServ);
+
+
     for(int i = 0; i < sizeX; i++)
     {
-        usleep(100);
-        contX.push_back(contXFromServ[i]);
-        contY.push_back(contYFromServ[i]);
+        double x;
+        double y;
+        getValuesFromServer(x, y);
+        contX.push_back(x);
+        contY.push_back(y);
+
+        /*
+        QCPItemTracer *tracer = new QCPItemTracer(ui->widget);
+           tracer->setGraph(ui->widget->graph(0));
+           tracer->setInterpolating(true);
+           tracer->setVisible(false);
+           for (int i = 0; i < 4; i++){
+
+              tracer->updatePosition();
+           }*/
+           QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+              dwPoints->setAdaptiveSampling(false);
+              dwPoints->setLineStyle(QCPGraph::lsNone);
+              dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
+              dwPoints->setPen(QPen(QBrush(Qt::red), 2));
+              dwPoints->addData(contX, contY);
 
         ui->widget->graph(0)->setData(contX, contY);
         ui->widget->replot();
     }
-*/
+
 
 /*
     //////////////////EXEMPLE/////////////////////
@@ -225,7 +242,7 @@ void ProtProp::on_btn_save_res_clicked()
     std::ostringstream textToWriteOSS;
     for(int i = 0; i < nbIter.toInt(); i++)
     {
-        textToWriteOSS << "" << contX[i] << ", " << contY[i] << "\n";
+        textToWriteOSS << "" << contNameProt[i] << ", " << contX[i] << ", " << contY[i] << "\n";
     }
     std::string textToWrite = textToWriteOSS.str();
 
@@ -244,10 +261,140 @@ void ProtProp::on_plot_clicked()
 }
 
 
-void getValuesFromServer(QVector<double> contX, QVector<double> contY)
+void ProtProp::getValuesFromServer(double &x, double &y)
 {
     //waiting on code from Jéjé to know how to recup the content, ideally I would want the values to be put directly in those containers.
     // TO DO
 
+    QString it;
+    QString score;
+    ReadXMLFile(it, score);
+    QFile file("temp.xml");
+    file.remove();
+
+    x = it.toDouble();
+    y = score.toDouble();
+
 }
 
+
+
+
+
+//////////////////////XML PARSING EXEMPLE ///////////////////////////////////////
+
+
+
+  
+void ProtProp::ReadXMLFile(QString &it, QString &score)
+{
+    QXmlStreamReader Rxml;
+
+
+    QFile file;
+
+    file.setFileName("/home/reds/Desktop/temp.xml");
+
+    while(!file.open(QFile::ReadOnly | QFile::Text))
+    {
+
+    }
+
+	Rxml.setDevice(&file);
+
+	Rxml.readNext();
+
+	while(!Rxml.atEnd())
+	{
+        if(Rxml.readNext() != QXmlStreamReader::EndDocument)
+        {
+            if(Rxml.isStartElement())
+            {
+                if(Rxml.name() == "result")
+                {
+                    Rxml.readNext();
+                }
+                while(!Rxml.atEnd())
+                {
+                     if(Rxml.isEndElement())
+                     {
+                         Rxml.readNext();
+                         break;
+                     }
+                     else if(Rxml.isCharacters())
+                     {
+                         Rxml.readNext();
+                     }
+                     else if(Rxml.isStartElement())
+                     {
+                         /*
+                         if(Rxml.name() == "name")
+                         {
+                            ReadElement();
+                         }*/
+                         if(Rxml.name() == "it")
+                         {
+                            it = Rxml.readElementText();   //Get the xml value
+                         }
+                         else if(Rxml.name() == "score")
+                         {
+                            score = Rxml.readElementText();   //Get the xml value
+                         }
+                         Rxml.readNext();
+                     }
+                     else
+                     {
+                        Rxml.readNext();
+                     }
+                }
+            }
+        }
+    }
+
+	file.close();
+
+    if (Rxml.hasError())
+	{
+	   std::cerr << "Error: Failed to parse file "
+                 << qPrintable("temp.xml") << ": "
+	             << qPrintable(Rxml.errorString()) << std::endl;
+        }
+	else if (file.error() != QFile::NoError)
+	{
+        std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
+	              << ": " << qPrintable(file.errorString())
+	              << std::endl;
+	}
+}
+
+
+
+//Example for Element
+/*
+QString ProtProp::ReadElement(QXmlStreamReader Rxml)
+{
+	while(!Rxml.atEnd())
+	{
+		if(Rxml.isEndElement())
+		{
+            Rxml.readNext();
+			break;
+		}
+		else if(Rxml.isStartElement())
+		{
+            QString element = Rxml.readElementText();   //Get the xml value
+            Rxml.readNext();
+            return element;
+		}
+		else if(Rxml.isCharacters())
+		{
+            Rxml.readNext();
+		}
+		else
+		{
+            Rxml.readNext();
+		}
+	}
+
+}
+*/
