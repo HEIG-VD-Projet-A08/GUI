@@ -105,7 +105,7 @@ void ProtProp::on_btn_run_clicked()
 		
         // greeting from client
         if( Socket->waitForConnected() ) {
-            Socket->write( "Hello Server" );
+            Socket->write( "Hello Server\n" );
             Socket->flush();
         }
 
@@ -120,10 +120,12 @@ void ProtProp::on_btn_run_clicked()
         }
 
         if( Socket->waitForConnected() ) {
-            Socket->write( "START" );
-            Socket->write( mydata );
+            Socket->write( "START\n" );
+            Socket->write( mydata + "\n");
             Socket->flush();
         }
+        Socket->write("STOP -R");
+        Socket->flush();
         file.close();
         Socket->disconnectFromHost();
     }	
