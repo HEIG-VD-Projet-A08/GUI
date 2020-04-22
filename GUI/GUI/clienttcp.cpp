@@ -27,7 +27,8 @@ void ClientTcp::sendGreetings(){
     if(!socket->waitForConnected()){
         qDebug() << "Error: " << socket->errorString();
     }else{
-         socket->write( "Hello Server\n" );
+        socket->write( "Hello Server\n" );
+        socket->flush();
     }
 }
 
@@ -37,10 +38,9 @@ void ClientTcp::sendData(QFile &file){
 
     socket->write( "START\n" );
     socket->write( mydata );
+    socket->write( "\n" );
+    socket->flush();
     file.close();
-    socket->disconnectFromHost();
-    while(!socket->waitForBytesWritten());
-    socket->connectToHost(add, port);
 }
 
 void ClientTcp::readyRead()
@@ -54,5 +54,13 @@ void ClientTcp::readyRead()
 
     // read the data from the socket
     QByteArray temp = socket->readAll();
-    qDebug() << temp;
+    // écriture du fichier XML dans le dossier de l'application
+    QDir dir;
+    QString path(dir.currentPath());
+    QFile file(path + "/option.xml");
+
+    // partie client TCP
+    file.open(QIODevice::WriteOnly);
+    file.write(temp);
+    file.close();
 }
