@@ -55,4 +55,13 @@ void ClientTcp::readyRead()
     // read the data from the socket
     QByteArray temp = socket->readAll();
     qDebug() << temp;
+
+    QDir dir;
+    QString path(dir.currentPath());
+    QFile file(path + "/tmp.xml");
+
+    // partie client TCP
+    file.open(QIODevice::WriteOnly);
+    file.write(temp);
+    file.close();
 }
