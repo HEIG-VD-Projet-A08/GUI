@@ -1,7 +1,6 @@
 
 #ifndef CLIENTTCP_H
 #define CLIENTTCP_H
-
 #include <QObject>
 #include <QTcpSocket>
 #include <QAbstractSocket>
@@ -16,6 +15,7 @@ private:
     QTcpSocket *socket;
     QString add;
     int port;
+
 public:
     ClientTcp(QObject *parent, QString ipAdd, int port);
     ~ClientTcp();

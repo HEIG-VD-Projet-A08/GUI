@@ -93,7 +93,9 @@ void ProtProp::on_btn_run_clicked()
         }
         file.close();
 
+
         test = new ClientTcp(this, ip, port.toInt());
+
 		
         test->sendGreetings();
         test->sendData(file);
@@ -233,8 +235,9 @@ void ProtProp::on_btn_run_clicked()
         QString it;
         QString score;
         ReadXMLFile(it, score);
-        QFile file("temp.xml");
-        file.remove();
+        QDir dir;
+        QString path(dir.currentPath());
+        QFile file(path + "/tmp.xml");
 
         x = it.toDouble();
         y = score.toDouble();
@@ -254,10 +257,9 @@ void ProtProp::on_btn_run_clicked()
     {
         QXmlStreamReader Rxml;
 
-
-        QFile file;
-
-        file.setFileName("/tmp.xml");
+        QDir dir;
+        QString path(dir.currentPath());
+        QFile file(path + "/tmp.xml");
 
         while(!file.open(QFile::ReadOnly | QFile::Text))
         {

@@ -21,6 +21,10 @@ class ProtProp : public QMainWindow
 
 public:
     ProtProp(QWidget *parent = nullptr);
+    void getValuesFromServer(double &x, double &y);
+    QVector<double> contX, contY, contXFromServ, contYFromServ, contNameProt;
+
+
     ~ProtProp();
 
 private slots:
@@ -30,7 +34,6 @@ private slots:
     void on_btn_save_res_clicked();
     void on_plot_clicked();
     void ReadXMLFile(QString &it, QString &score);
-    void getValuesFromServer(double &x, double &y);
 
 private:
     Ui::ProtProp *ui;
@@ -41,7 +44,6 @@ private:
     QString port;
     ClientTcp *test;
 
-    QVector<double> contX, contY, contXFromServ, contYFromServ, contNameProt;
     QString caract;
 
 };

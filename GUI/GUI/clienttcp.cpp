@@ -1,4 +1,5 @@
 #include "clienttcp.h"
+#include "protprop.h"
 #include <QObject>
 #include <QTcpSocket>
 #include <QAbstractSocket>
@@ -11,6 +12,7 @@
 ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent){
     // partie client TCP
     socket = new QTcpSocket( parent );
+
     connect(socket, &QTcpSocket::readyRead,this, &ClientTcp::readyRead);
     this->add = ipAdd;
     this->port = port;
@@ -59,6 +61,10 @@ void ClientTcp::readyRead()
     QDir dir;
     QString path(dir.currentPath());
     QFile file(path + "/tmp.xml");
+
+//    double x = 5;
+//    double y = 4;
+//    ProtProp::getValuesFromServer(x, y);
 
     // partie client TCP
     file.open(QIODevice::WriteOnly);
