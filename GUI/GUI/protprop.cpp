@@ -291,9 +291,9 @@ void ProtProp::ReadXMLFile(QString &it, QString &score)
     QXmlStreamReader Rxml;
 
 
-    QFile file;
-
-    file.setFileName("/tmp.xml");
+    QDir dir;
+    QString path(dir.currentPath());
+    QFile file(path + "/tmp.xml");
 
     while(!file.open(QFile::ReadOnly | QFile::Text))
     {
