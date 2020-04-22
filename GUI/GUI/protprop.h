@@ -5,7 +5,11 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QtNetwork>
-#include<QTcpSocket>
+#include <QObject>
+#include <QTcpSocket>
+#include <QAbstractSocket>
+#include <QDebug>
+#include "clienttcp.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ProtProp; }
@@ -33,6 +37,7 @@ private:
     QString nbIter;
     QString ip;
     QString port;
+    ClientTcp *test;
 
     QVector<double> contX, contY, contXFromServ, contYFromServ;
     QString caract;

@@ -38,7 +38,7 @@ ProtProp::ProtProp(QWidget *parent)
     // TODO : à enlever en cas de test automatique
     ui->nbWords->setText("10");
     ui->port->setValidator(inputNumberPort);
-    ui->port->setText("9000");
+    ui->port->setText("9001");
 }
 
 ProtProp::~ProtProp()
@@ -57,8 +57,6 @@ void ProtProp::on_btn_run_clicked()
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-	
-	
 	
 	// load input//    nbChars = ui->CharMax->text();
    
@@ -95,41 +93,32 @@ void ProtProp::on_btn_run_clicked()
         }
         file.close();
 
-        // partie client TCP
-        QTcpSocket *Socket = new QTcpSocket( this );
+        test = new ClientTcp(this, ip, port.toInt());
 
-        file.open(QIODevice::ReadOnly);
-        QByteArray mydata=file.readAll();
+//        // partie client TCP
+//        QTcpSocket *Socket = new QTcpSocket( this );
 
-        Socket->connectToHost(ip, port.toInt());
+//        file.open(QIODevice::ReadOnly);
+//        QByteArray mydata=file.readAll();
+
+//        Socket->connectToHost(ip, port.toInt());
 		
-        // greeting from client
-        if( Socket->waitForConnected() ) {
-            Socket->write( "Hello Server" );
-            Socket->flush();
-        }
+//        // greeting from client
+//        if( Socket->waitForConnected() ) {
+//            Socket->write( "Hello Server\n" );
+//        }
 
-        while(Socket->waitForReadyRead()){
-            QByteArray ba = Socket->readLine();
-            printf("from server: %s", ba.constData());
-            // TODO : à enlever en cas de test automatique
-            ba.remove(ba.size() -1, 1);
-            if(ba == "Hello Client"){
-                break;
-            }
-        }
+//        //while (Socket->readLine() != "Hello Client");
+//        //printf("Hello Recu");
 
-        if( Socket->waitForConnected() ) {
-            Socket->write( "START" );
-            Socket->write( mydata );
-            Socket->flush();
-        }
-        file.close();
-        Socket->disconnectFromHost();
+//        if( Socket->waitForConnected() ) {
+//            Socket->write( "START\n" );
+//            Socket->write( mydata );
+//            Socket->flush();
+//        }
+//        file.close();
+//        //Socket->close();
     }	
-	
-	
-	
 	
 	
     //start prog with variables above
