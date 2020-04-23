@@ -10,6 +10,7 @@
 
 class ClientTcp : public QObject
 {
+Q_OBJECT
 private:
     QObject *parent;
     QTcpSocket *socket;
@@ -23,11 +24,13 @@ public:
     void sendGreetings();
     void sendData(QFile &file);
 
+
 signals:
+    void readResultXML();
 
 public slots:
     void readyRead();
-    void sendData1(QFile &file);
+//    void sendData1(QFile &file);
 };
 
 #endif // CLIENTTCP_H

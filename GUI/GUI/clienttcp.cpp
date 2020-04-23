@@ -1,5 +1,4 @@
 #include "clienttcp.h"
-#include "protprop.h"
 #include <QObject>
 #include <QTcpSocket>
 #include <QAbstractSocket>
@@ -9,17 +8,24 @@
 #include <iostream>
 
 
+
 ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent){
     // partie client TCP
     socket = new QTcpSocket( parent );
 
-    connect(socket, &QTcpSocket::readyRead,this, &ClientTcp::readyRead);
+    connect(socket, &QTcpSocket::readyRead, this, &ClientTcp::readyRead);
+    connect(socket, &QTcpSocket::readyRead, this, &ClientTcp::readResultXML);
+
     this->add = ipAdd;
     this->port = port;
     qDebug() << "connecting...";
 
     socket->connectToHost(ipAdd, port);
 }
+
+//void ClientTcp::lireXML(){
+
+//}
 
 ClientTcp::~ClientTcp(){
     socket->close();

@@ -34,6 +34,7 @@ private slots:
     void on_btn_save_res_clicked();
     void on_plot_clicked();
     void ReadXMLFile(QString &it, QString &score);
+    void updateGraphe();
 
 private:
     Ui::ProtProp *ui;

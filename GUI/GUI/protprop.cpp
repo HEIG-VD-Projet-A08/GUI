@@ -95,7 +95,7 @@ void ProtProp::on_btn_run_clicked()
 
 
         test = new ClientTcp(this, ip, port.toInt());
-
+        connect(test, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 		
         test->sendGreetings();
         test->sendData(file);
@@ -137,32 +137,32 @@ void ProtProp::on_btn_run_clicked()
         //real code/values
 
 
-        for(int i = 0; i < sizeX; i++)
-        {
-            double x;
-            double y;
-            getValuesFromServer(x, y);
-            contX.push_back(x);
-            contY.push_back(y);
+//        for(int i = 0; i < sizeX; i++)
+//        {
+//            double x;
+//            double y;
+//            getValuesFromServer(x, y);
+//            contX.push_back(x);
+//            contY.push_back(y);
 
-            /*
-            QCPItemTracer *tracer = new QCPItemTracer(ui->widget);
-               tracer->setGraph(ui->widget->graph(0));
-               tracer->setInterpolating(true);
-               tracer->setVisible(false);
-               for (int i = 0; i < 4; i++){
-                  tracer->updatePosition();
-               }*/
-               QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
-                  dwPoints->setAdaptiveSampling(false);
-                  dwPoints->setLineStyle(QCPGraph::lsNone);
-                  dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
-                  dwPoints->setPen(QPen(QBrush(Qt::red), 2));
-                  dwPoints->addData(contX, contY);
+//            /*
+//            QCPItemTracer *tracer = new QCPItemTracer(ui->widget);
+//               tracer->setGraph(ui->widget->graph(0));
+//               tracer->setInterpolating(true);
+//               tracer->setVisible(false);
+//               for (int i = 0; i < 4; i++){
+//                  tracer->updatePosition();
+//               }*/
+//               QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+//                  dwPoints->setAdaptiveSampling(false);
+//                  dwPoints->setLineStyle(QCPGraph::lsNone);
+//                  dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
+//                  dwPoints->setPen(QPen(QBrush(Qt::red), 2));
+//                  dwPoints->addData(contX, contY);
 
-            ui->widget->graph(0)->setData(contX, contY);
-            ui->widget->replot();
-        }
+//            ui->widget->graph(0)->setData(contX, contY);
+//            ui->widget->replot();
+//        }
 
 
     /*
@@ -184,6 +184,33 @@ void ProtProp::on_btn_run_clicked()
         ui->widget->xAxis->setRange(-1, 1);
         ui->widget->yAxis->setRange(0, 1);
         ui->widget->replot();*/
+    }
+    void ProtProp::updateGraphe()
+    {
+        qDebug() << "Updating the graph";
+        double x;
+        double y;
+        getValuesFromServer(x, y);
+        contX.push_back(x);
+        contY.push_back(y);
+
+        /*
+        QCPItemTracer *tracer = new QCPItemTracer(ui->widget);
+           tracer->setGraph(ui->widget->graph(0));
+           tracer->setInterpolating(true);
+           tracer->setVisible(false);
+           for (int i = 0; i < 4; i++){
+              tracer->updatePosition();
+           }*/
+           QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+              dwPoints->setAdaptiveSampling(false);
+              dwPoints->setLineStyle(QCPGraph::lsNone);
+              dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
+              dwPoints->setPen(QPen(QBrush(Qt::red), 2));
+              dwPoints->addData(contX, contY);
+
+        ui->widget->graph(0)->setData(contX, contY);
+        ui->widget->replot();
     }
 
     void ProtProp::on_btn_stop_clicked()
