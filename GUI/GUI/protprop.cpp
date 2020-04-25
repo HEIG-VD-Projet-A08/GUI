@@ -57,9 +57,9 @@ void ProtProp::on_btn_run_clicked()
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-	
-	// load input//    nbChars = ui->CharMax->text();
-   
+
+    // load input//    nbChars = ui->CharMax->text();
+
         caract = ui->comboBox->currentText();
 
     // test que les arguments soient tous rempli
@@ -93,16 +93,17 @@ void ProtProp::on_btn_run_clicked()
         }
         file.close();
 
+
         test = new ClientTcp(this, ip, port.toInt());
         connect(test, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
-		
+
         test->sendGreetings();
         test->sendData(file);
 
 //        //while (Socket->readLine() != "Hello Client");
 //        //printf("Hello Recu");
-    }	
-	
+    }
+
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
         int sizeY = 100; //length of Y axis, represents success rate
 
@@ -224,7 +225,6 @@ void ProtProp::on_btn_run_clicked()
         //save current graph and results so you can continue the same process later
     }
 
-
     void ProtProp::on_btn_save_res_clicked()
     {
         //save results in a file
@@ -243,17 +243,6 @@ void ProtProp::on_btn_run_clicked()
         myFile.close();
 
     }
-    // create graph and assign data to it:
-    ui->widget->addGraph();
-    ui->widget->graph(0)->setData(x, y);
-    // give the axes some labels:
-    ui->widget->xAxis->setLabel("x");
-    ui->widget->yAxis->setLabel("y");
-    // set axes ranges, so we see all data:
-    ui->widget->xAxis->setRange(-1, 1);
-    ui->widget->yAxis->setRange(0, 1);
-    ui->widget->replot();*/
-}
 
     void ProtProp::on_plot_clicked()
     {
@@ -264,12 +253,6 @@ void ProtProp::on_btn_run_clicked()
         ui->widget->replot();
     }
 
-void ProtProp::on_btn_save_res_clicked()
-{
-    //save results in a file
-    //save in a file (csv) x and y coordinates WITH the name of an individual (get it from the alg, best word in the 10words group of each iteration)
-    std::ofstream myFile;
-    myFile.open("/home/reds/Desktop/savedResults.csv");
 
     void ProtProp::getValuesFromServer(double &x, double &y)
     {
@@ -288,26 +271,13 @@ void ProtProp::on_btn_save_res_clicked()
         y = score.toDouble();
 
     }
-    std::string textToWrite = textToWriteOSS.str();
 
-    myFile << textToWrite;
-    myFile.close();
 
-}
 
-void ProtProp::on_plot_clicked()
-{
-
-    //Resets the view (usefull if we used the drag or the zoom feature)
-    ui->widget->xAxis->setRange(0, nbIter.toInt());
-    ui->widget->yAxis->setRange(0, 100);
-    ui->widget->replot();
-}
 
 
     //////////////////////XML PARSING EXEMPLE ///////////////////////////////////////
 
-}
 
 
 
