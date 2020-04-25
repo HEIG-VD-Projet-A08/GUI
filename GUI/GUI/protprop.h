@@ -21,8 +21,11 @@ class ProtProp : public QMainWindow
 
 public:
     ProtProp(QWidget *parent = nullptr);
+    void getValuesFromServer(double &x, double &y);
+    QVector<double> contX, contY, contXFromServ, contYFromServ, contNameProt;
+
+
     ~ProtProp();
-    void getValuesFromServer(QVector<double> contX, QVector<double> contY);
 
 private slots:
     void on_btn_run_clicked();
@@ -30,6 +33,9 @@ private slots:
     void on_btn_save_actual_clicked();
     void on_btn_save_res_clicked();
     void on_plot_clicked();
+    void ReadXMLFile(QString &it, QString &score);
+    void updateGraphe();
+
 private:
     Ui::ProtProp *ui;
     QString nbWords;
@@ -39,7 +45,6 @@ private:
     QString port;
     ClientTcp *test;
 
-    QVector<double> contX, contY, contXFromServ, contYFromServ;
     QString caract;
 
 };
