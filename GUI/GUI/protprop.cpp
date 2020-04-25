@@ -223,7 +223,7 @@ void ProtProp::on_btn_run_clicked()
         //snapshot system, to implement later
         //save current graph and results so you can continue the same process later
     }
-*/
+
 
     void ProtProp::on_btn_save_res_clicked()
     {
