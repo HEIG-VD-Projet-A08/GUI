@@ -2,11 +2,11 @@
 #ifndef CLIENTTCP_H
 #define CLIENTTCP_H
 #include <QObject>
+#include <QtNetwork>
 #include <QTcpSocket>
 #include <QAbstractSocket>
 #include <QDebug>
 #include <QtCore>
-#include <QtNetwork>
 
 class ClientTcp : public QObject
 {
