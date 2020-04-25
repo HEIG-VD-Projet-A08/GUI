@@ -8,4 +8,4 @@ install:
 script:
   - qmake -project
   - qmake GUI/GUI/GUI.pro
-  - make
+  - make GUI/GUI/
