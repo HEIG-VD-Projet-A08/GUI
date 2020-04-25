@@ -7,9 +7,10 @@ sudo: required
 
 install:
   - sudo apt-get update
-  - sudo apt-get install libqt4-dev qt4-qmake 
+  - sudo apt-get install qt5-default qttools5-dev-tools
 
 script:
+  - qmake -project
   - qmake GUI/GUI/GUI.pro
   - make
 
