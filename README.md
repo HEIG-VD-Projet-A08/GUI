@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/HEIG-VD-Projet-A08/GUI.svg?branch=master)](https://travis-ci.com/HEIG-VD-Projet-A08/GUI)
+
 # Outil pour la recherche de séquences génomiques
 
 ## Description
