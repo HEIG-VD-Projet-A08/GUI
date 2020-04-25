@@ -10,6 +10,7 @@ install:
   - sudo apt-get install libqt4-dev qt4-qmake 
 
 script:
+  - qmake GUI/GUI/GUI.pro
   - make
 
 
