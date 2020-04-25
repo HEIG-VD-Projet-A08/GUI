@@ -11,13 +11,20 @@
 ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent){
     // partie client TCP
     socket = new QTcpSocket( parent );
-    connect(socket, &QTcpSocket::readyRead,this, &ClientTcp::readyRead);
+
+    connect(socket, &QTcpSocket::readyRead, this, &ClientTcp::readyRead);
+    connect(socket, &QTcpSocket::readyRead, this, &ClientTcp::readResultXML);
+
     this->add = ipAdd;
     this->port = port;
     qDebug() << "connecting...";
 
     socket->connectToHost(ipAdd, port);
 }
+
+//void ClientTcp::lireXML(){
+
+//}
 
 ClientTcp::~ClientTcp(){
     socket->close();
@@ -45,6 +52,9 @@ void ClientTcp::sendData(QFile &file){
 
 void ClientTcp::readyRead()
 {
+    qDebug() << "reading...";
+
+    // we need to wait...
     if(!socket->waitForConnected(5000)){
         qDebug() << "Error: " << socket->errorString();
     }
@@ -52,12 +62,10 @@ void ClientTcp::readyRead()
     // read the data from the socket
     QByteArray temp = socket->readAll();
     qDebug() << temp;
+
     QDir dir;
     QString path(dir.currentPath());
-
     QFile file(path + "/tmp.xml");
-    QString relativePath = path + "/tmp.xml";
-    qDebug() << "le fichier se trouve : " << relativePath;
 
     // partie client TCP
     file.open(QIODevice::WriteOnly);
