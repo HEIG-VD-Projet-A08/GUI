@@ -8,14 +8,12 @@ Le serveur sera implémenter de manière stateless. Les transferts d'options ou 
 
 # Établissement de la communication 
 
-Pour établir la connexion avec le serveur, Le client débutera la communication avec le message **Hello Server**, et si le Serveur est disponible, il lui répondra avec un **Hello Client**. 
+Pour établir la connexion avec le serveur, Le client débutera la communication avec le message **Hello Server**.
+Nous ne gérons pas si plusieurs clients se connectent au serveur. 
 
 ```sequence
 Client->>Server: Send "Hello Server"
-Server->>Client: Send "Hello Client"
 ```
-
-
 
 # Commandes implémentées
 
@@ -26,9 +24,8 @@ Pour toutes ces commandes on considère que le client à déjà début la commun
 Pour débuter un calcul, le client envoie la commande **START\n <fichier.xml>** ou fichier.xml est l'ensemble des options dont le programme à besoin pour fonctionner. 
 
 ```sequence
-Client->>Server: Send "START"
+Client->>Server: Send "START\n"
 Client->>Server: Send "options.xml"
-Server->>Client: Send "options are Ok, Start experiment"
 ```
 
 ## Mise en pause du processus en cours 
@@ -37,7 +34,7 @@ Server->>Client: Send "options are Ok, Start experiment"
 
 Si pour une raison ou une autre le client désire terminer le processus en cours, il envoie la commande **STOP**. Tout le processus sera alors perdu. 
 ```sequence
-Client->>Server: Send "STOP"
+Client->>Server: Send "STOP\n"
 Server->>Client: Send "STOP experiment"
 ```
 
@@ -50,12 +47,10 @@ Client->>Server: Send "STOP -R"
 Server->>Client: Send "STOP experiment,intermediate result in Result.xml "
 ```
 
-## Demande de résultat intermédiaire
-
-**RES**
+## Résultat intermédiaire
+À chaque itération le serveur envoie les données à afficher dans le graphique sous la forme d'un fichier xml.
 ```sequence
-Client->>Server: Send "RES"
-Server->>Client: Send "intermediate result in Result.xml"
+Server->>Client: Send Result.xml
 ```
 
 ## Terminaison d'une communication existante
@@ -70,13 +65,6 @@ Si le client effectue la commande **BYE**, le serveur coupera la communication s
 Client->>Server: Send "BYE"
 ```
 
-### Par le serveur 
-
-Si le client a obtenu un résultat final à l'expérience lancée, il enverra un message l'informant ou a été sauvegardé le fichier contenant les résultats et terminera la communication.
-
-```sequence
-Server->>Client: Send "Final result in Result.xml"
-```
 
 ## Commande Fausse ou erreur de paramètres
 
