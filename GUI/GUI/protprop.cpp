@@ -131,26 +131,6 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->replot();
 
 
-
-    for(int i = 0; i < sizeX; i++)
-    {
-        double x;
-        double y;
-        getValuesFromServer(x, y);
-        contX.push_back(x);
-        contY.push_back(y);
-
-	   QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
-		  dwPoints->setAdaptiveSampling(false);
-		  dwPoints->setLineStyle(QCPGraph::lsNone);
-		  dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
-		  dwPoints->setPen(QPen(QBrush(Qt::red), 2));
-		  dwPoints->addData(contX, contY);
-
-        ui->widget->graph(0)->setData(contX, contY);
-        ui->widget->replot();
-    }
-
 }
 
 void ProtProp::updateGraphe()
@@ -162,14 +142,6 @@ void ProtProp::updateGraphe()
     contX.push_back(x);
     contY.push_back(y);
 
-    /*
-    QCPItemTracer *tracer = new QCPItemTracer(ui->widget);
-       tracer->setGraph(ui->widget->graph(0));
-       tracer->setInterpolating(true);
-       tracer->setVisible(false);
-       for (int i = 0; i < 4; i++){
-          tracer->updatePosition();
-       }*/
        QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
           dwPoints->setAdaptiveSampling(false);
           dwPoints->setLineStyle(QCPGraph::lsNone);
