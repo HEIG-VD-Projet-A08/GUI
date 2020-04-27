@@ -5,11 +5,7 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QtNetwork>
-#include <QObject>
-#include <QTcpSocket>
-#include <QAbstractSocket>
-#include <QDebug>
-#include "clienttcp.h"
+#include<QTcpSocket>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ProtProp; }
@@ -21,11 +17,8 @@ class ProtProp : public QMainWindow
 
 public:
     ProtProp(QWidget *parent = nullptr);
-    void getValuesFromServer(double &x, double &y);
-    QVector<double> contX, contY, contXFromServ, contYFromServ, contNameProt;
-
-
     ~ProtProp();
+    void getValuesFromServer(QVector<double> contX, QVector<double> contY);
 
 private slots:
     void on_btn_run_clicked();
@@ -34,7 +27,7 @@ private slots:
     void on_btn_save_res_clicked();
     void on_plot_clicked();
     void ReadXMLFile(QString &it, QString &score);
-    void updateGraphe();
+    void getValuesFromServer(double &x, double &y);
 
 private:
     Ui::ProtProp *ui;
@@ -43,8 +36,8 @@ private:
     QString nbIter;
     QString ip;
     QString port;
-    ClientTcp *test;
 
+    QVector<double> contNameProt, contX, contY, contXFromServ, contYFromServ;
     QString caract;
 
 };
