@@ -49,7 +49,8 @@ ProtProp::~ProtProp()
 }
 
 /**
- * @brief ProtProp::on_btn_run_clicked gestion du chargement des paramètres lorsqu'on presse sur run
+ * @brief ProtProp::on_btn_run_clicked gestion du chargement des paramètres lorsqu'on presse sur run,
+ *  envoit les informations au serveur et attend la réception de résultats pour commencer à dessiner le graphe
  */
 void ProtProp::on_btn_run_clicked()
 {
@@ -153,22 +154,6 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->replot();
 
 
-    /*
-    //DUMB VALUES
-    for(int i = 0; i < sizeX; i++)
-    {
-        usleep(100);
-
-        //Here we will replace those appends by the values we receive from the server
-        contX.append(i);
-        contY.append(5+i);
-
-        ui->widget->graph(0)->setData(contX, contY);
-        ui->widget->replot();
-    }
-    */
-    //real code/values
-
 
     for(int i = 0; i < sizeX; i++)
     {
@@ -178,46 +163,17 @@ void ProtProp::on_btn_run_clicked()
         contX.push_back(x);
         contY.push_back(y);
 
-        /*
-        QCPItemTracer *tracer = new QCPItemTracer(ui->widget);
-           tracer->setGraph(ui->widget->graph(0));
-           tracer->setInterpolating(true);
-           tracer->setVisible(false);
-           for (int i = 0; i < 4; i++){
-
-              tracer->updatePosition();
-           }*/
-           QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
-              dwPoints->setAdaptiveSampling(false);
-              dwPoints->setLineStyle(QCPGraph::lsNone);
-              dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
-              dwPoints->setPen(QPen(QBrush(Qt::red), 2));
-              dwPoints->addData(contX, contY);
+	   QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+		  dwPoints->setAdaptiveSampling(false);
+		  dwPoints->setLineStyle(QCPGraph::lsNone);
+		  dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
+		  dwPoints->setPen(QPen(QBrush(Qt::red), 2));
+		  dwPoints->addData(contX, contY);
 
         ui->widget->graph(0)->setData(contX, contY);
         ui->widget->replot();
     }
 
-
-/*
-    //////////////////EXEMPLE/////////////////////
-    // generate some data:
-    QVector<double> x(101), y(101); // initialize with entries 0..100
-    for (int i=0; i<101; ++i)
-    {
-      x[i] = i/50.0 - 1; // x goes from -1 to 1
-      y[i] = x[i]*x[i]; // let's plot a quadratic function
-    }
-    // create graph and assign data to it:
-    ui->widget->addGraph();
-    ui->widget->graph(0)->setData(x, y);
-    // give the axes some labels:
-    ui->widget->xAxis->setLabel("x");
-    ui->widget->yAxis->setLabel("y");
-    // set axes ranges, so we see all data:
-    ui->widget->xAxis->setRange(-1, 1);
-    ui->widget->yAxis->setRange(0, 1);
-    ui->widget->replot();*/
 }
 
 void ProtProp::on_btn_stop_clicked()
@@ -232,6 +188,9 @@ void ProtProp::on_btn_save_actual_clicked()
     //save current graph and results so you can continue the same process later
 }
 
+/**
+ * @brief ProtProp::on_btn_save_res_clicked, Sauvegarde les résultats obtenu dans un fichier CSV.
+ */
 void ProtProp::on_btn_save_res_clicked()
 {
     //save results in a file
@@ -251,6 +210,9 @@ void ProtProp::on_btn_save_res_clicked()
 	
 }
 
+/**
+ * @brief ProtProp::on_plot_clicked, Reset la vue et le zoom.
+ */
 void ProtProp::on_plot_clicked()
 {
 
@@ -261,6 +223,10 @@ void ProtProp::on_plot_clicked()
 }
 
 
+/**
+ * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
+ * On supprime également le fichier XML afin d'atteindre correctement le prochain
+ */
 void ProtProp::getValuesFromServer(double &x, double &y)
 {
     //waiting on code from Jéjé to know how to recup the content, ideally I would want the values to be put directly in those containers.
@@ -285,7 +251,9 @@ void ProtProp::getValuesFromServer(double &x, double &y)
 
 
 
-  
+/**
+ * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score
+ */
 void ProtProp::ReadXMLFile(QString &it, QString &score)
 {
     QXmlStreamReader Rxml;
@@ -367,34 +335,3 @@ void ProtProp::ReadXMLFile(QString &it, QString &score)
 	}
 }
 
-
-
-//Example for Element
-/*
-QString ProtProp::ReadElement(QXmlStreamReader Rxml)
-{
-	while(!Rxml.atEnd())
-	{
-		if(Rxml.isEndElement())
-		{
-            Rxml.readNext();
-			break;
-		}
-		else if(Rxml.isStartElement())
-		{
-            QString element = Rxml.readElementText();   //Get the xml value
-            Rxml.readNext();
-            return element;
-		}
-		else if(Rxml.isCharacters())
-		{
-            Rxml.readNext();
-		}
-		else
-		{
-            Rxml.readNext();
-		}
-	}
-
-}
-*/
