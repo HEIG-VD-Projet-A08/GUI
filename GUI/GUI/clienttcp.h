@@ -7,6 +7,7 @@
 #include <QAbstractSocket>
 #include <QDebug>
 #include <QtCore>
+#include <QMessageBox>
 
 class ClientTcp : public QObject
 {
@@ -33,8 +34,9 @@ public:
 
     /**
      * @brief sendGreetings établit une connexion avec le serveur
+     * @return si 1 cela veut dire qu'une erreur s'est produite, si  0 tout est en ordre
      */
-    void sendGreetings();
+    int sendGreetings();
 
     /**
      * @brief sendData envoie un fichier XML pour la configuration de l'algorithme

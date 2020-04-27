@@ -1,15 +1,12 @@
 
 #include "protprop.h"
 #include "./ui_protprop.h"
-
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
-
 #include <QXmlStreamReader>
-
-#include<QRegExpValidator>
+#include <QRegExpValidator>
 
 
 ProtProp::ProtProp(QWidget *parent)
@@ -55,18 +52,12 @@ ProtProp::~ProtProp()
  */
 void ProtProp::on_btn_run_clicked()
 {
-
     nbChars = ui->CharMax->text();
     nbWords = ui->nbWords->text();   //max around 20-50
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-	
-	
-	
-	// load input//    nbChars = ui->CharMax->text();
-   
-        caract = ui->comboBox->currentText();
+    caract = ui->comboBox->currentText();
 
     // test que les arguments soient tous rempli
     if (nbChars == "" || nbWords == "" || nbIter == "" || caract == ""){
@@ -95,16 +86,16 @@ void ProtProp::on_btn_run_clicked()
         if(xmlWriter.hasError()){
             QMessageBox::warning(0, QString("Erreur de saisie"), QString("Problème lors de la génération du fichier de configuration"));
         }else{
-            QMessageBox::information(0, QString("Tout roule."), QString("Le programme va être exécuté."));
+            QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
         }
         file.close();
-
 
         socket = new ClientTcp(this, ip, port.toInt());
         connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 
-        socket->sendGreetings();
-        socket->sendData(file);
+        if(!socket->sendGreetings()){
+            socket->sendData(file);
+        }
     }	
 	
 

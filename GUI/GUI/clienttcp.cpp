@@ -22,21 +22,23 @@ ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent){
 }
 
 ClientTcp::~ClientTcp(){
-    socket->close();
 }
 
-void ClientTcp::sendGreetings(){
+int ClientTcp::sendGreetings(){
     if(!socket->waitForConnected()){
-        qDebug() << "Error: " << socket->errorString();
-    }else{
-         socket->write( "Hello Server\n" );
+        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
+        socket->close();
+        return 1;
     }
+
+    socket->write( "Hello Server\n" );
+    return 0;
 }
 
 void ClientTcp::sendStop(){
     // if disconnect
     if(!socket->waitForConnected(1000)){
-        qDebug() << "Error: " << socket->errorString();
+        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
         return;
     }
 
@@ -46,7 +48,7 @@ void ClientTcp::sendStop(){
 void ClientTcp::sendStopRecovery(){
     // if disconnect
     if(!socket->waitForConnected(1000)){
-        qDebug() << "Error: " << socket->errorString();
+        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
         return;
     }
 
@@ -56,7 +58,7 @@ void ClientTcp::sendStopRecovery(){
 void ClientTcp::TerminConnexion(){
     // if disconnect
     if(!socket->waitForConnected(1000)){
-        qDebug() << "Error: " << socket->errorString();
+        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
         return;
     }
 
