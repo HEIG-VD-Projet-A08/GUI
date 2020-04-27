@@ -34,10 +34,35 @@ void ClientTcp::sendGreetings(){
 }
 
 void ClientTcp::sendStop(){
+    // if disconnect
+    if(!socket->waitForConnected(1000)){
+        qDebug() << "Error: " << socket->errorString();
+        return;
+    }
+
     socket->write( "STOP\n" );
+}
+
+void ClientTcp::sendStopRecovery(){
+    // if disconnect
+    if(!socket->waitForConnected(1000)){
+        qDebug() << "Error: " << socket->errorString();
+        return;
+    }
+
+    socket->write( "STOP -R\n" );
+}
+
+void ClientTcp::TerminConnexion(){
+    // if disconnect
+    if(!socket->waitForConnected(1000)){
+        qDebug() << "Error: " << socket->errorString();
+        return;
+    }
+
+    socket->write( "BYE" );
     socket->disconnectFromHost();
-    while(!socket->waitForBytesWritten());
-    socket->connectToHost(add, port);
+    socket->close();
 }
 
 void ClientTcp::sendData(QFile &file){
@@ -54,10 +79,8 @@ void ClientTcp::sendData(QFile &file){
 
 void ClientTcp::readyRead()
 {
-    qDebug() << "reading...";
-
     // if disconnect
-    if(!socket->waitForConnected(5000)){
+    if(!socket->waitForConnected(1000)){
         qDebug() << "Error: " << socket->errorString();
         return;
     }

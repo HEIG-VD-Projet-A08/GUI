@@ -47,6 +47,16 @@ public:
      */
     void sendStop();
 
+    /**
+     * @brief sendStopRecovery demande l'arrêt au serveur en gardant de quoi poursuivre par la suite //TODO à tester
+     */
+    void sendStopRecovery();
+
+    /**
+     * @brief TerminConnexion termine la connexion avec le serveur et détruit la socket
+     */
+    void TerminConnexion();
+
 signals:
     /**
      * @brief readResultXML reçoit les résultats du serveur sous format XML
