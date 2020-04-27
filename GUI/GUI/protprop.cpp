@@ -100,13 +100,11 @@ void ProtProp::on_btn_run_clicked()
         file.close();
 
 
-        test = new ClientTcp(this, ip, port.toInt());
-        connect(test, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
+        socket = new ClientTcp(this, ip, port.toInt());
+        connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 
-        test->sendGreetings();
-        test->sendData(file);
-
-
+        socket->sendGreetings();
+        socket->sendData(file);
     }	
 	
 
@@ -153,6 +151,34 @@ void ProtProp::on_btn_run_clicked()
         ui->widget->replot();
     }
 
+}
+
+void ProtProp::updateGraphe()
+{
+    qDebug() << "Updating the graph";
+    double x;
+    double y;
+    getValuesFromServer(x, y);
+    contX.push_back(x);
+    contY.push_back(y);
+
+    /*
+    QCPItemTracer *tracer = new QCPItemTracer(ui->widget);
+       tracer->setGraph(ui->widget->graph(0));
+       tracer->setInterpolating(true);
+       tracer->setVisible(false);
+       for (int i = 0; i < 4; i++){
+          tracer->updatePosition();
+       }*/
+       QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+          dwPoints->setAdaptiveSampling(false);
+          dwPoints->setLineStyle(QCPGraph::lsNone);
+          dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
+          dwPoints->setPen(QPen(QBrush(Qt::red), 2));
+          dwPoints->addData(contX, contY);
+
+    ui->widget->graph(0)->setData(contX, contY);
+    ui->widget->replot();
 }
 
 void ProtProp::on_btn_stop_clicked()
@@ -223,3 +249,86 @@ void ProtProp::getValuesFromServer(double &x, double &y)
 }
 
 
+/**
+ * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score
+ */
+void ProtProp::ReadXMLFile(QString &it, QString &score)
+{
+    QXmlStreamReader Rxml;
+
+
+    QDir dir;
+    QString path(dir.currentPath());
+    QFile file(path + "/tmp.xml");
+
+    while(!file.open(QFile::ReadOnly | QFile::Text))
+    {
+
+    }
+
+    Rxml.setDevice(&file);
+
+    Rxml.readNext();
+
+    while(!Rxml.atEnd())
+    {
+        if(Rxml.readNext() != QXmlStreamReader::EndDocument)
+        {
+            if(Rxml.isStartElement())
+            {
+                if(Rxml.name() == "result")
+                {
+                    Rxml.readNext();
+                }
+                while(!Rxml.atEnd())
+                {
+                     if(Rxml.isEndElement())
+                     {
+                         Rxml.readNext();
+                         break;
+                     }
+                     else if(Rxml.isCharacters())
+                     {
+                         Rxml.readNext();
+                     }
+                     else if(Rxml.isStartElement())
+                     {
+                         /*
+                         if(Rxml.name() == "name")
+                         {
+                            ReadElement();
+                         }*/
+                         if(Rxml.name() == "it")
+                         {
+                            it = Rxml.readElementText();   //Get the xml value
+                         }
+                         else if(Rxml.name() == "score")
+                         {
+                            score = Rxml.readElementText();   //Get the xml value
+                         }
+                         Rxml.readNext();
+                     }
+                     else
+                     {
+                        Rxml.readNext();
+                     }
+                }
+            }
+        }
+    }
+
+    file.close();
+
+    if (Rxml.hasError())
+    {
+       std::cerr << "Error: Failed to parse file "
+                 << qPrintable("temp.xml") << ": "
+                 << qPrintable(Rxml.errorString()) << std::endl;
+        }
+    else if (file.error() != QFile::NoError)
+    {
+        std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
+                  << ": " << qPrintable(file.errorString())
+                  << std::endl;
+    }
+}

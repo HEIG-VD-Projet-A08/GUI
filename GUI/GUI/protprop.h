@@ -5,7 +5,8 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QtNetwork>
-#include<QTcpSocket>
+#include <QTcpSocket>
+#include "clienttcp.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class ProtProp; }
@@ -28,6 +29,7 @@ private slots:
     void on_plot_clicked();
     void ReadXMLFile(QString &it, QString &score);
     void getValuesFromServer(double &x, double &y);
+    void updateGraphe();
 
 private:
     Ui::ProtProp *ui;
@@ -36,6 +38,7 @@ private:
     QString nbIter;
     QString ip;
     QString port;
+    ClientTcp *socket;
 
     QVector<double> contNameProt, contX, contY, contXFromServ, contYFromServ;
     QString caract;
