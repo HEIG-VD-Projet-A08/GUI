@@ -12,10 +12,10 @@ class ClientTcp : public QObject
 {
 Q_OBJECT
 private:
-    QObject *parent;
-    QTcpSocket *socket;
-    QString add;
-    int port;
+    QObject *parent;        // pointeur sur le parent
+    QTcpSocket *socket;     // pointeur sur la socket vers le serveur
+    QString add;            // adresse de la socket
+    int port;               // port de la socket
 
 public:
     /**
@@ -25,6 +25,7 @@ public:
      * @param port port de connection
      */
     ClientTcp(QObject *parent, QString ipAdd, int port);
+
     /**
       * @brief destructeur de la classe, ferme aussi le socket
       */
@@ -34,12 +35,17 @@ public:
      * @brief sendGreetings établit une connexion avec le serveur
      */
     void sendGreetings();
+
     /**
      * @brief sendData envoie un fichier XML pour la configuration de l'algorithme
      * @param file fichier à envoyer
      */
     void sendData(QFile &file);
 
+    /**
+     * @brief sendStop demande d'arrêt au serveur //TODO à tester
+     */
+    void sendStop();
 
 signals:
     /**

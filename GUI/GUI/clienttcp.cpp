@@ -17,14 +17,9 @@ ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent){
 
     this->add = ipAdd;
     this->port = port;
-    qDebug() << "connecting...";
 
     socket->connectToHost(ipAdd, port);
 }
-
-//void ClientTcp::lireXML(){
-
-//}
 
 ClientTcp::~ClientTcp(){
     socket->close();
@@ -36,6 +31,13 @@ void ClientTcp::sendGreetings(){
     }else{
          socket->write( "Hello Server\n" );
     }
+}
+
+void ClientTcp::sendStop(){
+    socket->write( "STOP\n" );
+    socket->disconnectFromHost();
+    while(!socket->waitForBytesWritten());
+    socket->connectToHost(add, port);
 }
 
 void ClientTcp::sendData(QFile &file){
@@ -54,9 +56,10 @@ void ClientTcp::readyRead()
 {
     qDebug() << "reading...";
 
-    // we need to wait...
+    // if disconnect
     if(!socket->waitForConnected(5000)){
         qDebug() << "Error: " << socket->errorString();
+        return;
     }
 
     // read the data from the socket
