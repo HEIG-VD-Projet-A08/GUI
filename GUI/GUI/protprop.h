@@ -34,7 +34,8 @@ private slots:
 private:
     Ui::ProtProp *ui;
     QString nbWords;
-    QString nbChars;
+    QString nbCharsMax;
+    QString nbCharsMin;
     QString nbIter;
     QString ip;
     QString port;
@@ -42,6 +43,5 @@ private:
 
     QVector<double> contNameProt, contX, contY, contXFromServ, contYFromServ;
     QString caract;
-
 };
 #endif // PROTPROP_H

@@ -11,7 +11,7 @@
 
 ProtProp::ProtProp(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::ProtProp)
+    , ui(new Ui::ProtProp), socket(nullptr)
 {
     // set validators for input
     QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
@@ -29,8 +29,11 @@ ProtProp::ProtProp(QWidget *parent)
     ui->IP->setText("127.0.0.1");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
+    ui->CharMin->setValidator(inputNumberChar);
     // TODO : à enlever en cas de test automatique
     ui->CharMax->setText("100");
+    // TODO : à enlever en cas de test automatique
+    ui->CharMin->setText("10");
     ui->iterations->setValidator(inputIteration);
     // TODO : à enlever en cas de test automatique
     ui->iterations->setText("11");
@@ -38,6 +41,7 @@ ProtProp::ProtProp(QWidget *parent)
     // TODO : à enlever en cas de test automatique
     ui->nbWords->setText("10");
     ui->port->setValidator(inputNumberPort);
+    // TODO : à enlever en cas de test automatique
     ui->port->setText("9000");
 }
 
@@ -52,15 +56,16 @@ ProtProp::~ProtProp()
  */
 void ProtProp::on_btn_run_clicked()
 {
-    nbChars = ui->CharMax->text();
+    nbCharsMax = ui->CharMax->text();
     nbWords = ui->nbWords->text();   //max around 20-50
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
     caract = ui->comboBox->currentText();
+    nbCharsMin = ui->CharMin->text();
 
     // test que les arguments soient tous rempli
-    if (nbChars == "" || nbWords == "" || nbIter == "" || caract == ""){
+    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || caract == ""){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
     }else{
         // écriture du fichier XML dans le dossier de l'application
@@ -77,27 +82,33 @@ void ProtProp::on_btn_run_clicked()
 
         xmlWriter.writeStartElement("Options");
         xmlWriter.writeTextElement("Nb_words", nbWords);
-        xmlWriter.writeTextElement("Nb_char", nbChars);
+        xmlWriter.writeTextElement("Nb_char_Max", nbCharsMax);
+        xmlWriter.writeTextElement("Nb_char_Min", nbCharsMin);
         xmlWriter.writeTextElement("Nb_iter", nbIter);
         xmlWriter.writeTextElement("caracteristique", caract);
         xmlWriter.writeTextElement("add_ip", ip);
         xmlWriter.writeEndElement();
+
         // test si une erreur est survenue pendant l'écriture du fichier xml
         if(xmlWriter.hasError()){
-            QMessageBox::warning(0, QString("Erreur de saisie"), QString("Problème lors de la génération du fichier de configuration"));
-        }else{
-            QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
+            QMessageBox::warning(0, QString("Erreur"), QString("Problème lors de la génération du fichier de configuration"));
         }
+
         file.close();
 
-        socket = new ClientTcp(this, ip, port.toInt());
-        connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
+        if (socket == nullptr){
+            socket = new ClientTcp(this, ip, port.toInt());
+            connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 
-        if(!socket->sendGreetings()){
-            socket->sendData(file);
+            QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
+
+            if(!socket->sendGreetings()){
+                socket->sendData(file);
+            }
+        }else{
+            QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp a déjà été instancié."));
         }
     }	
-	
 
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
@@ -106,7 +117,6 @@ void ProtProp::on_btn_run_clicked()
     //then, get results in a container and show them on the graph
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
-
 
     ui->widget->clearGraphs();
     ui->widget->replot();
@@ -120,8 +130,6 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->xAxis->setRange(0, sizeX);
     ui->widget->yAxis->setRange(0, sizeY);
     ui->widget->replot();
-
-
 }
 
 void ProtProp::updateGraphe()
@@ -146,14 +154,25 @@ void ProtProp::updateGraphe()
 
 void ProtProp::on_btn_stop_clicked()
 {
-    //implémenter plus tard, les gens sont pas d'accord sur la fonction du bouton
-    //stop prog
+//    this->hide();
+//    struct timespec ts = { 10, 0 };
+//    nanosleep(&ts, NULL);
+//    this->show();
+
+    if (socket == nullptr){
+        QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
+    }
+    socket->sendStop();
 }
 
 void ProtProp::on_btn_save_actual_clicked()
 {
     //snapshot system, to implement later
     //save current graph and results so you can continue the same process later
+    if (socket == nullptr){
+        QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
+    }
+    socket->sendStopRecovery();
 }
 
 /**
@@ -175,7 +194,6 @@ void ProtProp::on_btn_save_res_clicked()
 
     myFile << textToWrite;
     myFile.close();
-	
 }
 
 /**
@@ -183,7 +201,6 @@ void ProtProp::on_btn_save_res_clicked()
  */
 void ProtProp::on_plot_clicked()
 {
-
     //Resets the view (usefull if we used the drag or the zoom feature)
     ui->widget->xAxis->setRange(0, nbIter.toInt());
     ui->widget->yAxis->setRange(0, 100);
@@ -208,7 +225,6 @@ void ProtProp::getValuesFromServer(double &x, double &y)
 
     x = it.toDouble();
     y = score.toDouble();
-
 }
 
 

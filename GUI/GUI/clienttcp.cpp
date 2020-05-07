@@ -73,10 +73,11 @@ void ClientTcp::sendData(QFile &file){
 
     socket->write( "START\n" );
     socket->write( mydata );
+    socket->write("\n");
     file.close();
-    socket->disconnectFromHost();
+//    socket->disconnectFromHost();
     while(!socket->waitForBytesWritten());
-    socket->connectToHost(add, port);
+//    socket->connectToHost(add, port);
 }
 
 void ClientTcp::readyRead()
