@@ -64,58 +64,59 @@ void ProtProp::on_btn_run_clicked()
     caract = ui->comboBox->currentText();
     nbCharsMin = ui->CharMin->text();
 
+    // test que les arguments soient tous rempli
+    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || caract == ""){
+        QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+        return;
+    }
+
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
         return;
     }
 
-    // test que les arguments soient tous rempli
-    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || caract == ""){
-        QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+    // écriture du fichier XML dans le dossier de l'application
+    QDir dir;
+    QString path(dir.currentPath());
+    QFile file(path + "/option.xml");
+
+    // partie client TCP
+    file.open(QIODevice::WriteOnly);
+
+    QXmlStreamWriter xmlWriter(&file);
+    xmlWriter.setAutoFormatting(true);
+    xmlWriter.writeStartDocument();
+
+    xmlWriter.writeStartElement("Options");
+    xmlWriter.writeTextElement("Nb_words", nbWords);
+    xmlWriter.writeTextElement("Nb_char_Max", nbCharsMax);
+    xmlWriter.writeTextElement("Nb_char_Min", nbCharsMin);
+    xmlWriter.writeTextElement("Nb_iter", nbIter);
+    xmlWriter.writeTextElement("caracteristique", caract);
+    xmlWriter.writeEndElement();
+
+    // test si une erreur est survenue pendant l'écriture du fichier xml
+    if(xmlWriter.hasError()){
+        QMessageBox::warning(0, QString("Erreur"), QString("Problème lors de la génération du fichier de configuration"));
+    }
+
+    file.close();
+
+    // test si le serveur est déjà instancié
+    if (socket != nullptr){
+        QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp a déjà été instancié."));
         return;
-    }else{
-        // écriture du fichier XML dans le dossier de l'application
-        QDir dir;
-        QString path(dir.currentPath());
-        QFile file(path + "/option.xml");
+    }
 
-        // partie client TCP
-        file.open(QIODevice::WriteOnly);
+    socket = new ClientTcp(this, ip, port.toInt());
+    connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 
-        QXmlStreamWriter xmlWriter(&file);
-        xmlWriter.setAutoFormatting(true);
-        xmlWriter.writeStartDocument();
+    QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
 
-        xmlWriter.writeStartElement("Options");
-        xmlWriter.writeTextElement("Nb_words", nbWords);
-        xmlWriter.writeTextElement("Nb_char_Max", nbCharsMax);
-        xmlWriter.writeTextElement("Nb_char_Min", nbCharsMin);
-        xmlWriter.writeTextElement("Nb_iter", nbIter);
-        xmlWriter.writeTextElement("caracteristique", caract);
-        xmlWriter.writeEndElement();
-
-        // test si une erreur est survenue pendant l'écriture du fichier xml
-        if(xmlWriter.hasError()){
-            QMessageBox::warning(0, QString("Erreur"), QString("Problème lors de la génération du fichier de configuration"));
-        }
-
-        file.close();
-
-        if (socket == nullptr){
-            socket = new ClientTcp(this, ip, port.toInt());
-            connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
-
-            QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
-
-            if(!socket->sendGreetings()){
-                socket->sendData(file);
-            }
-        }else{
-            QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp a déjà été instancié."));
-            return;
-        }
-    }	
+    if(!socket->sendGreetings()){
+        socket->sendData(file);
+    }
 
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
