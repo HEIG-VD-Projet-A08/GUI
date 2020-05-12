@@ -64,9 +64,16 @@ void ProtProp::on_btn_run_clicked()
     caract = ui->comboBox->currentText();
     nbCharsMin = ui->CharMin->text();
 
+    // contrôle des bornes des paramètres entrés
+    if(nbIter.toInt() < 1 || nbWords.toInt() < 1){
+        QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
+        return;
+    }
+
     // test que les arguments soient tous rempli
     if (nbCharsMax == "" || nbWords == "" || nbIter == "" || caract == ""){
-        QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+        QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+        return;
     }else{
         // écriture du fichier XML dans le dossier de l'application
         QDir dir;
@@ -107,6 +114,7 @@ void ProtProp::on_btn_run_clicked()
             }
         }else{
             QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp a déjà été instancié."));
+            return;
         }
     }	
 
@@ -141,12 +149,12 @@ void ProtProp::updateGraphe()
     contX.push_back(x);
     contY.push_back(y);
 
-       QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
-          dwPoints->setAdaptiveSampling(false);
-          dwPoints->setLineStyle(QCPGraph::lsNone);
-          dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
-          dwPoints->setPen(QPen(QBrush(Qt::red), 2));
-          dwPoints->addData(contX, contY);
+   QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+      dwPoints->setAdaptiveSampling(false);
+      dwPoints->setLineStyle(QCPGraph::lsNone);
+      dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
+      dwPoints->setPen(QPen(QBrush(Qt::red), 2));
+      dwPoints->addData(contX, contY);
 
     ui->widget->graph(0)->setData(contX, contY);
     ui->widget->replot();
@@ -160,7 +168,7 @@ void ProtProp::on_btn_stop_clicked()
 //    this->show();
 
     if (socket == nullptr){
-        QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
+        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
     }
     socket->sendStop();
 }
@@ -234,7 +242,6 @@ void ProtProp::getValuesFromServer(double &x, double &y)
 void ProtProp::ReadXMLFile(QString &it, QString &score)
 {
     QXmlStreamReader Rxml;
-
 
     QDir dir;
     QString path(dir.currentPath());
