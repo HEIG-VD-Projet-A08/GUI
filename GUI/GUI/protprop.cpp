@@ -93,7 +93,6 @@ void ProtProp::on_btn_run_clicked()
         xmlWriter.writeTextElement("Nb_char_Min", nbCharsMin);
         xmlWriter.writeTextElement("Nb_iter", nbIter);
         xmlWriter.writeTextElement("caracteristique", caract);
-        xmlWriter.writeTextElement("add_ip", ip);
         xmlWriter.writeEndElement();
 
         // test si une erreur est survenue pendant l'écriture du fichier xml
