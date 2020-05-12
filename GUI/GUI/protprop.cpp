@@ -8,7 +8,10 @@
 #include <QXmlStreamReader>
 #include <QRegExpValidator>
 
-
+/**
+ * @brief ProtProp::ProtProp définit les regex pour les paramètres,
+ * @param parent parent de l'objet
+ */
 ProtProp::ProtProp(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::ProtProp), socket(nullptr)
@@ -16,8 +19,9 @@ ProtProp::ProtProp(QWidget *parent)
     // set validators for input
     QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
     QRegExpValidator *inputNumberPort = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
-    QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("[0-9][0-9][0-9][0-9][0-9]"));
+    QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("(?:[0-9]{5}"));
     QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
+
     // set possibility for menu with "localisation" as default possibility
     QStringList n;
     n << "Localisation" << "Toxicité" ;
@@ -71,7 +75,7 @@ void ProtProp::on_btn_run_clicked()
     }
 
     // contrôle des bornes des paramètres entrés
-    if(nbIter.toInt() < 1 || nbWords.toInt() < 1){
+    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
         return;
     }
