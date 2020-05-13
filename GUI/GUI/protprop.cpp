@@ -46,7 +46,7 @@ ProtProp::ProtProp(QWidget *parent)
     ui->nbWords->setText("10");
     ui->port->setValidator(inputNumberPort);
     // TODO : à enlever en cas de test automatique
-    ui->port->setText("9000");
+    ui->port->setText("9001");
 }
 
 ProtProp::~ProtProp()
