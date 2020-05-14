@@ -19,7 +19,7 @@ ProtProp::ProtProp(QWidget *parent)
     // set validators for input
     QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
     QRegExpValidator *inputNumberPort = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
-    QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("(?:[0-9]{5}"));
+    QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
     QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
 
     // set possibility for menu with "localisation" as default possibility
@@ -173,6 +173,7 @@ void ProtProp::on_btn_stop_clicked()
 
     if (socket == nullptr){
         QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        return;
     }
     socket->sendStop();
 }
@@ -183,6 +184,7 @@ void ProtProp::on_btn_save_actual_clicked()
     //save current graph and results so you can continue the same process later
     if (socket == nullptr){
         QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
+        return;
     }
     socket->sendStopRecovery();
 }
