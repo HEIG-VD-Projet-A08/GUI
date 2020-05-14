@@ -116,11 +116,14 @@ void ProtProp::on_btn_run_clicked()
     socket = new ClientTcp(this, ip, port.toInt());
     connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 
-    QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
 
     if(!socket->sendGreetings()){
         socket->sendData(file);
+    }else{
+        socket = nullptr;
+        return;
     }
+    QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
 
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
@@ -194,6 +197,11 @@ void ProtProp::on_btn_save_actual_clicked()
  */
 void ProtProp::on_btn_save_res_clicked()
 {
+    if (socket == nullptr){
+        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        return;
+    }
+
     //save results in a file
     //save in a file (csv) x and y coordinates WITH the name of an individual (get it from the alg, best word in the 10words group of each iteration)
     std::ofstream myFile;
@@ -215,6 +223,11 @@ void ProtProp::on_btn_save_res_clicked()
  */
 void ProtProp::on_plot_clicked()
 {
+    if (socket == nullptr){
+        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        return;
+    }
+
     //Resets the view (usefull if we used the drag or the zoom feature)
     ui->widget->xAxis->setRange(0, nbIter.toInt());
     ui->widget->yAxis->setRange(0, 100);
