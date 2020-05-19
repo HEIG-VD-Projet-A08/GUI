@@ -157,20 +157,32 @@ void ProtProp::on_btn_run_clicked()
 
     for(int i = 0; i < sizeX; i++)
     {
-        double x;
+        double x1;
+        double x2;
         double y;
-        getValuesFromServer(x, y);
-        contX.push_back(x);
+        getValuesFromServer(x1, x2, y);
+        contX1.push_back(x1);
+        contX2.push_back(x2);
         contY.push_back(y);
 
-	   QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
-		  dwPoints->setAdaptiveSampling(false);
-		  dwPoints->setLineStyle(QCPGraph::lsNone);
-		  dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
-		  dwPoints->setPen(QPen(QBrush(Qt::red), 2));
-		  dwPoints->addData(contX, contY);
+       QCPGraph* dwPoints1 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+          dwPoints1->setAdaptiveSampling(false);
+          dwPoints1->setLineStyle(QCPGraph::lsNone);
+          dwPoints1->setScatterStyle(QCPScatterStyle::ssCircle);
+          dwPoints1->setPen(QPen(QBrush(Qt::blue), 2));
+          dwPoints1->addData(contX1, contY);
 
-        ui->widget->graph(0)->setData(contX, contY);
+      QCPGraph* dwPoints2 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+         dwPoints2->setAdaptiveSampling(false);
+         dwPoints2->setLineStyle(QCPGraph::lsNone);
+         dwPoints2->setScatterStyle(QCPScatterStyle::ssTriangle);
+         dwPoints2->setPen(QPen(QBrush(Qt::red), 2));
+         dwPoints2->addData(contX2, contY);
+
+        ui->widget->graph(0)->setData(contX1, contY);
+        ui->widget->graph(0)->setPen(QPen(QBrush(Qt::blue), 2));
+        ui->widget->graph(1)->setData(contX2, contY);
+        ui->widget->graph(1)->setPen(QPen(QBrush(Qt::red), 2));
         ui->widget->replot();
     }
 
@@ -201,7 +213,7 @@ void ProtProp::on_btn_save_res_clicked()
     std::ostringstream textToWriteOSS;
     for(int i = 0; i < nbIter.toInt(); i++)
     {
-        textToWriteOSS << "" << contNameProt[i] << ", " << contX[i] << ", " << contY[i] << "\n";
+        textToWriteOSS << "" << contX1[i] << ", " << contX2[i] << ", " << contY[i] << "\n";
     }
     std::string textToWrite = textToWriteOSS.str();
 
@@ -227,18 +239,20 @@ void ProtProp::on_plot_clicked()
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
  */
-void ProtProp::getValuesFromServer(double &x, double &y)
+void ProtProp::getValuesFromServer(double &x1, double &x2, double &y)
 {
     //waiting on code from Jéjé to know how to recup the content, ideally I would want the values to be put directly in those containers.
     // TO DO
 
     QString it;
     QString score;
-    ReadXMLFile(it, score);
+    QString newValue;
+    ReadXMLFile(it, score, newValue);
     QFile file("temp.xml");
     file.remove();
 
-    x = it.toDouble();
+    x1 = it.toDouble();
+    x2 = newValue.toDouble();
     y = score.toDouble();
 
 }
@@ -254,7 +268,7 @@ void ProtProp::getValuesFromServer(double &x, double &y)
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score
  */
-void ProtProp::ReadXMLFile(QString &it, QString &score)
+void ProtProp::ReadXMLFile(QString &it, QString &score, QString &newValue)
 {
     QXmlStreamReader Rxml;
 
@@ -307,6 +321,10 @@ void ProtProp::ReadXMLFile(QString &it, QString &score)
                          else if(Rxml.name() == "score")
                          {
                             score = Rxml.readElementText();   //Get the xml value
+                         }
+                         else if(Rxml.name() == "newValue")
+                         {
+                             newValue = Rxml.readElementText(); //Get the xml value
                          }
                          Rxml.readNext();
                      }
