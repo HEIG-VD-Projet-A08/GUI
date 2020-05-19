@@ -31,6 +31,8 @@ private slots:
     void getValuesFromServer(double &x, double &y);
     void updateGraphe();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::ProtProp *ui;
     QString nbWords;

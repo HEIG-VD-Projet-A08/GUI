@@ -27,13 +27,20 @@
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>366</x>
       <y>640</y>
-      <width>767</width>
+      <width>891</width>
       <height>25</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>cacher la GUI</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="plot">
        <property name="text">

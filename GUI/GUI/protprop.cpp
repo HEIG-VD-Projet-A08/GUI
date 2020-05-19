@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <QXmlStreamReader>
 #include <QRegExpValidator>
+#include <QInputDialog>
 
 /**
  * @brief ProtProp::ProtProp définit les regex pour les paramètres,
@@ -169,11 +170,6 @@ void ProtProp::updateGraphe()
 
 void ProtProp::on_btn_stop_clicked()
 {
-//    this->hide();
-//    struct timespec ts = { 10, 0 };
-//    nanosleep(&ts, NULL);
-//    this->show();
-
     if (socket == nullptr){
         QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
         return;
@@ -336,4 +332,20 @@ void ProtProp::ReadXMLFile(QString &it, QString &score)
                   << ": " << qPrintable(file.errorString())
                   << std::endl;
     }
+}
+/**
+ * @brief ProtProp::on_pushButton_clicked permet de cacher la GUi pendant un certain temps. au maximum 1h
+ */
+void ProtProp::on_pushButton_clicked()
+{
+    bool ok;
+    int temps = QInputDialog::getInt(this, tr("Durée de fermeture de la GUI en minutes"),
+                                         tr("User name:"), 1, 0, 60, 1, &ok);
+    if (!ok)
+        return;
+
+    this->hide();
+    struct timespec ts = { 1 * temps * 60, 0 };
+    nanosleep(&ts, NULL);
+    this->show();
 }
