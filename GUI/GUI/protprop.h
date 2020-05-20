@@ -26,7 +26,7 @@ private slots:
     void on_btn_save_res_clicked();
     void on_plot_clicked();
     void ReadXMLFile(QString &it, QString &score, QString &newValue);
-    void getValuesFromServer(double &x1, double &x2, double &y);
+    void getValuesFromServer(double &x, double &y1, double &y2);
 
 private:
     Ui::ProtProp *ui;
@@ -36,7 +36,7 @@ private:
     QString ip;
     QString port;
 
-    QVector<double> contX1, contX2, contY, contXFromServ, contYFromServ;
+    QVector<double> contX, contY1, contY2;
     QString caract;
 
 };

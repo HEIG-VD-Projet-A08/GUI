@@ -129,9 +129,9 @@ void ProtProp::on_btn_run_clicked()
         }
         file.close();
         Socket->disconnectFromHost();
-    }	
+    }
 	
-	
+
 	
 	
 
@@ -145,6 +145,7 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->setInteraction(QCP::iRangeDrag, true);
     ui->widget->setInteraction(QCP::iRangeZoom, true);
     ui->widget->addGraph();
+    ui->widget->addGraph();
     // give the axes some labels:
     ui->widget->xAxis->setLabel("iterations");
     ui->widget->yAxis->setLabel("success rate");
@@ -157,31 +158,31 @@ void ProtProp::on_btn_run_clicked()
 
     for(int i = 0; i < sizeX; i++)
     {
-        double x1;
-        double x2;
-        double y;
-        getValuesFromServer(x1, x2, y);
-        contX1.push_back(x1);
-        contX2.push_back(x2);
-        contY.push_back(y);
+        double x;
+        double y1;
+        double y2;
+        getValuesFromServer(x, y1, y2);
+        contX.push_back(x);
+        contY1.push_back(y1);
+        contY2.push_back(y2);
 
        QCPGraph* dwPoints1 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
           dwPoints1->setAdaptiveSampling(false);
           dwPoints1->setLineStyle(QCPGraph::lsNone);
           dwPoints1->setScatterStyle(QCPScatterStyle::ssCircle);
           dwPoints1->setPen(QPen(QBrush(Qt::blue), 2));
-          dwPoints1->addData(contX1, contY);
+          dwPoints1->addData(contX, contY1);
 
       QCPGraph* dwPoints2 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
          dwPoints2->setAdaptiveSampling(false);
          dwPoints2->setLineStyle(QCPGraph::lsNone);
          dwPoints2->setScatterStyle(QCPScatterStyle::ssTriangle);
          dwPoints2->setPen(QPen(QBrush(Qt::red), 2));
-         dwPoints2->addData(contX2, contY);
+         dwPoints2->addData(contX, contY2);
 
-        ui->widget->graph(0)->setData(contX1, contY);
+        ui->widget->graph(0)->setData(contX, contY1);
         ui->widget->graph(0)->setPen(QPen(QBrush(Qt::blue), 2));
-        ui->widget->graph(1)->setData(contX2, contY);
+        ui->widget->graph(1)->setData(contX, contY2);
         ui->widget->graph(1)->setPen(QPen(QBrush(Qt::red), 2));
         ui->widget->replot();
     }
@@ -208,12 +209,13 @@ void ProtProp::on_btn_save_res_clicked()
     //save results in a file
     //save in a file (csv) x and y coordinates WITH the name of an individual (get it from the alg, best word in the 10words group of each iteration)
     std::ofstream myFile;
-    myFile.open("/home/reds/Desktop/savedResults.csv");
+    myFile.open("savedResults.csv");
 
     std::ostringstream textToWriteOSS;
+    textToWriteOSS << "iteration, test, predict" << "\n";
     for(int i = 0; i < nbIter.toInt(); i++)
     {
-        textToWriteOSS << "" << contX1[i] << ", " << contX2[i] << ", " << contY[i] << "\n";
+        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
     }
     std::string textToWrite = textToWriteOSS.str();
 
@@ -239,21 +241,19 @@ void ProtProp::on_plot_clicked()
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
  */
-void ProtProp::getValuesFromServer(double &x1, double &x2, double &y)
+void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 {
-    //waiting on code from Jéjé to know how to recup the content, ideally I would want the values to be put directly in those containers.
-    // TO DO
 
     QString it;
-    QString score;
-    QString newValue;
-    ReadXMLFile(it, score, newValue);
+    QString test;
+    QString predict;
+    ReadXMLFile(it, test, predict);
     QFile file("temp.xml");
     file.remove();
 
-    x1 = it.toDouble();
-    x2 = newValue.toDouble();
-    y = score.toDouble();
+    x = it.toDouble();
+    y1 = test.toDouble();
+    y2 = predict.toDouble();
 
 }
 
@@ -266,9 +266,9 @@ void ProtProp::getValuesFromServer(double &x1, double &x2, double &y)
 
 
 /**
- * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score
+ * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
  */
-void ProtProp::ReadXMLFile(QString &it, QString &score, QString &newValue)
+void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
 {
     QXmlStreamReader Rxml;
 
@@ -309,22 +309,17 @@ void ProtProp::ReadXMLFile(QString &it, QString &score, QString &newValue)
                      }
                      else if(Rxml.isStartElement())
                      {
-                         /*
-                         if(Rxml.name() == "name")
-                         {
-                            ReadElement();
-                         }*/
                          if(Rxml.name() == "it")
                          {
                             it = Rxml.readElementText();   //Get the xml value
                          }
-                         else if(Rxml.name() == "score")
+                         else if(Rxml.name() == "test")
                          {
-                            score = Rxml.readElementText();   //Get the xml value
+                            test = Rxml.readElementText();   //Get the xml value
                          }
-                         else if(Rxml.name() == "newValue")
+                         else if(Rxml.name() == "predict")
                          {
-                             newValue = Rxml.readElementText(); //Get the xml value
+                             predict = Rxml.readElementText(); //Get the xml value
                          }
                          Rxml.readNext();
                      }
