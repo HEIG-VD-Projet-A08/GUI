@@ -41,7 +41,6 @@ ProtProp::ProtProp(QWidget *parent)
     ui->port->setText("9001");
 }
 
-
 ProtProp::~ProtProp()
 {
     delete ui;
@@ -118,7 +117,6 @@ void ProtProp::on_btn_run_clicked()
     }
     QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
 
-
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
     //wait for the algo to start sending us results
@@ -126,7 +124,6 @@ void ProtProp::on_btn_run_clicked()
     //then, get results in a container and show them on the graph
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
-
 
     contX.clear();
     contY1.clear();
@@ -145,13 +142,10 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->xAxis->setRange(0, sizeX);
     ui->widget->yAxis->setRange(0, sizeY);
     ui->widget->replot();
-
 }
 
 void ProtProp::updateGraphe()
 {
-    qDebug() << "Updating the graph";
-
     double x;
     double y1;
     double y2;
@@ -188,6 +182,8 @@ void ProtProp::on_btn_stop_clicked()
         return;
     }
     socket->sendStop();
+    socket->TerminConnexion();
+    socket = nullptr;
 }
 
 void ProtProp::on_btn_save_actual_clicked()
@@ -250,7 +246,6 @@ void ProtProp::on_plot_clicked()
     ui->widget->replot();
 }
 
-
 /**
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
@@ -270,7 +265,6 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
     y1 = test.toDouble();
     y2 = predict.toDouble();
 }
-
 
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
@@ -353,5 +347,3 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
                   << std::endl;
     }
 }
-
-
