@@ -165,10 +165,12 @@ void ProtProp::updateGraphe()
     double x;
     double y1;
     double y2;
-    getValuesFromServer(x, y1, y2);
+    QVector<QString> word;
+    getValuesFromServer(x, y1, y2, word);
     contX.push_back(x);
     contY1.push_back(y1);
     contY2.push_back(y2);
+    words.push_back(word);
 
    QCPGraph* dwPoints1 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
       dwPoints1->setAdaptiveSampling(false);
@@ -232,9 +234,15 @@ void ProtProp::on_btn_save_res_clicked()
 
     std::ostringstream textToWriteOSS;
     textToWriteOSS << "iteration, test, predict" << "\n";
-    for(int i = 0; i < nbIter.toInt(); i++)
+    for(int i = 0; i < contX.size(); i++)
     {
-        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
+        QVector<QString> word = words[i];
+        for(int j = 0; j < word.size(); j++)
+        {
+            std::string wordString = word[j].toStdString();
+            textToWriteOSS << wordString << ", ";
+        }
+        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << ";\n";
     }
     std::string textToWrite = textToWriteOSS.str();
 
@@ -268,18 +276,17 @@ void ProtProp::on_plot_clicked()
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
  */
-void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
+void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
 
     QString it;
     QString test;
     QString predict;
-    ReadXMLFile(it, test, predict);
+    ReadXMLFile(it, test, predict, word);
     QFile file("temp.xml");
     file.remove();
 
     x = it.toDouble();
-
     y1 = test.toDouble();
     y2 = predict.toDouble();
 
@@ -290,13 +297,14 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
  */
-void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
+void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector<QString> &word)
 {
     QXmlStreamReader Rxml;
 
     QDir dir;
     QString path(dir.currentPath());
     QFile file(path + "/tmp.xml");
+    int i = 0;
 
     while(!file.open(QFile::ReadOnly | QFile::Text))
     {
@@ -341,6 +349,11 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
                          else if(Rxml.name() == "predict")
                          {
                              predict = Rxml.readElementText(); //Get the xml value
+                         }
+                         else if(Rxml.name() == "word")
+                         {
+                             word[i] = Rxml.readElementText();
+                             i++;
                          }
                          Rxml.readNext();
                      }
