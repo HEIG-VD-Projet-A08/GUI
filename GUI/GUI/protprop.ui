@@ -35,13 +35,6 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
-      <widget class="QPushButton" name="plot">
-       <property name="text">
-        <string>Màj graphique</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="btn_save_res">
        <property name="text">
         <string>sauvegarde des résultats</string>
@@ -51,7 +44,7 @@
      <item>
       <widget class="QPushButton" name="btn_save_actual">
        <property name="text">
-        <string>sauvegarde de l'état actuel</string>
+        <string>Stop Request</string>
        </property>
       </widget>
      </item>
