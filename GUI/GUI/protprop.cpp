@@ -138,6 +138,9 @@ void ProtProp::on_btn_run_clicked()
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
 
+    contX.clear();
+    contY1.clear();
+    contY2.clear();
 
     ui->widget->clearGraphs();
     ui->widget->replot();
@@ -189,25 +192,6 @@ void ProtProp::updateGraphe()
 }
 
 
-void ProtProp::updateGraphe()
-{
-    qDebug() << "Updating the graph";
-    double x;
-    double y;
-    getValuesFromServer(x, y);
-    contX.push_back(x);
-    contY.push_back(y);
-
-       QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
-          dwPoints->setAdaptiveSampling(false);
-          dwPoints->setLineStyle(QCPGraph::lsNone);
-          dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
-          dwPoints->setPen(QPen(QBrush(Qt::red), 2));
-          dwPoints->addData(contX, contY);
-
-    ui->widget->graph(0)->setData(contX, contY);
-    ui->widget->replot();
-}
 
 void ProtProp::on_btn_stop_clicked()
 {
