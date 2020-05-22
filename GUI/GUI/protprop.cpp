@@ -1,3 +1,4 @@
+
 #include "protprop.h"
 #include "./ui_protprop.h"
 #include <fstream>
@@ -76,6 +77,7 @@ void ProtProp::on_btn_run_clicked()
         return;
     }
 
+<<<<<<< HEAD
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
@@ -126,11 +128,22 @@ void ProtProp::on_btn_run_clicked()
         return;
     }
     QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
+=======
+
+        socket = new ClientTcp(this, ip, port.toInt());
+        connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
+
+        socket->sendGreetings();
+        socket->sendData(file);
+    }	
+	
+>>>>>>> master
 
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
     //wait for the algo to start sending us results
 
+    //then, get results in a container and show them on the graph
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
 
@@ -182,7 +195,29 @@ void ProtProp::updateGraphe()
     ui->widget->graph(1)->setPen(QPen(QBrush(Qt::red), 2));
     ui->widget->replot();
 
+}
 
+<<<<<<< HEAD
+=======
+void ProtProp::updateGraphe()
+{
+    qDebug() << "Updating the graph";
+    double x;
+    double y;
+    getValuesFromServer(x, y);
+    contX.push_back(x);
+    contY.push_back(y);
+
+       QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+          dwPoints->setAdaptiveSampling(false);
+          dwPoints->setLineStyle(QCPGraph::lsNone);
+          dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
+          dwPoints->setPen(QPen(QBrush(Qt::red), 2));
+          dwPoints->addData(contX, contY);
+
+    ui->widget->graph(0)->setData(contX, contY);
+    ui->widget->replot();
+>>>>>>> master
 }
 
 void ProtProp::on_btn_stop_clicked()
@@ -271,13 +306,6 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 }
 
 
-
-
-
-//////////////////////XML PARSING EXEMPLE ///////////////////////////////////////
-
-
-
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
  */
@@ -295,12 +323,12 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
 
     }
 
-	Rxml.setDevice(&file);
+    Rxml.setDevice(&file);
 
-	Rxml.readNext();
+    Rxml.readNext();
 
-	while(!Rxml.atEnd())
-	{
+    while(!Rxml.atEnd())
+    {
         if(Rxml.readNext() != QXmlStreamReader::EndDocument)
         {
             if(Rxml.isStartElement())
@@ -345,21 +373,22 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
         }
     }
 
-	file.close();
+    file.close();
 
     if (Rxml.hasError())
-	{
-	   std::cerr << "Error: Failed to parse file "
+    {
+       std::cerr << "Error: Failed to parse file "
                  << qPrintable("temp.xml") << ": "
-	             << qPrintable(Rxml.errorString()) << std::endl;
+                 << qPrintable(Rxml.errorString()) << std::endl;
         }
-	else if (file.error() != QFile::NoError)
-	{
+    else if (file.error() != QFile::NoError)
+    {
         std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
-	              << ": " << qPrintable(file.errorString())
-	              << std::endl;
-	}
+                  << ": " << qPrintable(file.errorString())
+                  << std::endl;
+    }
 }
+<<<<<<< HEAD
 
 /**
  * @brief ProtProp::on_pushButton_clicked permet de cacher la GUi pendant un certain temps. au maximum 1h
@@ -377,3 +406,5 @@ void ProtProp::on_pushButton_clicked()
     nanosleep(&ts, NULL);
     this->show();
 }
+=======
+>>>>>>> master

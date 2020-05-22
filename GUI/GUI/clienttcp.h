@@ -1,3 +1,4 @@
+
 #ifndef CLIENTTCP_H
 #define CLIENTTCP_H
 #include <QObject>
