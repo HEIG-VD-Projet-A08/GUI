@@ -5,7 +5,9 @@
 #include <QFileDialog>
 #include <QtCore>
 #include <QtNetwork>
-#include<QTcpSocket>
+
+#include <QTcpSocket>
+
 #include "clienttcp.h"
 
 QT_BEGIN_NAMESPACE
@@ -20,17 +22,20 @@ public:
     ProtProp(QWidget *parent = nullptr);
     ~ProtProp();
 
+
 private slots:
     void on_btn_run_clicked();
     void on_btn_stop_clicked();
     void on_btn_save_actual_clicked();
     void on_btn_save_res_clicked();
     void on_plot_clicked();
+
     void ReadXMLFile(QString &it, QString &score, QString &newValue);
     void getValuesFromServer(double &x, double &y1, double &y2);
     void updateGraphe();
 
     void on_pushButton_clicked();
+
 
 private:
     Ui::ProtProp *ui;
@@ -44,6 +49,5 @@ private:
 
     QVector<double> contX, contY1, contY2;
     QString caract;
-
 };
 #endif // PROTPROP_H

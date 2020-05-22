@@ -1,3 +1,4 @@
+
 #include "protprop.h"
 #include "./ui_protprop.h"
 #include <fstream>
@@ -76,6 +77,7 @@ void ProtProp::on_btn_run_clicked()
         return;
     }
 
+
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
@@ -127,13 +129,19 @@ void ProtProp::on_btn_run_clicked()
     }
     QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
 
+
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
     //wait for the algo to start sending us results
 
+    //then, get results in a container and show them on the graph
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
 
+
+    contX.clear();
+    contY1.clear();
+    contY2.clear();
 
     ui->widget->clearGraphs();
     ui->widget->replot();
@@ -182,8 +190,9 @@ void ProtProp::updateGraphe()
     ui->widget->graph(1)->setPen(QPen(QBrush(Qt::red), 2));
     ui->widget->replot();
 
-
 }
+
+
 
 void ProtProp::on_btn_stop_clicked()
 {
@@ -211,9 +220,11 @@ void ProtProp::on_btn_save_actual_clicked()
 void ProtProp::on_btn_save_res_clicked()
 {
     if (socket == nullptr){
-            QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
-            return;
+
+        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        return;
     }
+
     //save results in a file
     //save in a file (csv) x and y coordinates WITH the name of an individual (get it from the alg, best word in the 10words group of each iteration)
     std::ofstream myFile;
@@ -229,7 +240,6 @@ void ProtProp::on_btn_save_res_clicked()
 
     myFile << textToWrite;
     myFile.close();
-	
 }
 
 /**
@@ -237,6 +247,10 @@ void ProtProp::on_btn_save_res_clicked()
  */
 void ProtProp::on_plot_clicked()
 {
+    if (socket == nullptr){
+        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        return;
+    }
 
     if (socket == nullptr){
             QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
@@ -265,17 +279,12 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
     file.remove();
 
     x = it.toDouble();
+
     y1 = test.toDouble();
     y2 = predict.toDouble();
 
+
 }
-
-
-
-
-
-//////////////////////XML PARSING EXEMPLE ///////////////////////////////////////
-
 
 
 /**
@@ -284,7 +293,6 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
 {
     QXmlStreamReader Rxml;
-
 
     QDir dir;
     QString path(dir.currentPath());
@@ -295,12 +303,12 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
 
     }
 
-	Rxml.setDevice(&file);
+    Rxml.setDevice(&file);
 
-	Rxml.readNext();
+    Rxml.readNext();
 
-	while(!Rxml.atEnd())
-	{
+    while(!Rxml.atEnd())
+    {
         if(Rxml.readNext() != QXmlStreamReader::EndDocument)
         {
             if(Rxml.isStartElement())
@@ -345,20 +353,20 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
         }
     }
 
-	file.close();
+    file.close();
 
     if (Rxml.hasError())
-	{
-	   std::cerr << "Error: Failed to parse file "
+    {
+       std::cerr << "Error: Failed to parse file "
                  << qPrintable("temp.xml") << ": "
-	             << qPrintable(Rxml.errorString()) << std::endl;
+                 << qPrintable(Rxml.errorString()) << std::endl;
         }
-	else if (file.error() != QFile::NoError)
-	{
+    else if (file.error() != QFile::NoError)
+    {
         std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
-	              << ": " << qPrintable(file.errorString())
-	              << std::endl;
-	}
+                  << ": " << qPrintable(file.errorString())
+                  << std::endl;
+    }
 }
 
 /**
