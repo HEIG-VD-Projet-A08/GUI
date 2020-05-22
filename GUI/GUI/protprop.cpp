@@ -219,7 +219,7 @@ void ProtProp::on_btn_save_res_clicked()
 
     std::ostringstream textToWriteOSS;
     textToWriteOSS << "iteration, test, predict" << "\n";
-    for(int i = 0; i < nbIter.toInt(); i++)
+    for(int i = 0; i < contX.size(); i++)
     {
         textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
     }
