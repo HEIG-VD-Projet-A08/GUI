@@ -31,18 +31,13 @@ ProtProp::ProtProp(QWidget *parent)
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
     ui->CharMin->setValidator(inputNumberChar);
-    // TODO : à enlever en cas de test automatique
     ui->CharMax->setText("30");
-    // TODO : à enlever en cas de test automatique
     ui->CharMin->setText("20");
     ui->iterations->setValidator(inputIteration);
-    // TODO : à enlever en cas de test automatique
     ui->iterations->setText("100");
     ui->nbWords->setValidator(inputWordMax);
-    // TODO : à enlever en cas de test automatique
     ui->nbWords->setText("10");
     ui->port->setValidator(inputNumberPort);
-    // TODO : à enlever en cas de test automatique
     ui->port->setText("9001");
 }
 
@@ -74,7 +69,7 @@ void ProtProp::on_btn_run_clicked()
 
 
     // contrôle des bornes des paramètres entrés
-    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49){
+    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49 || nbCharsMin.toInt() > nbCharsMax.toInt() ){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
         return;
     }
