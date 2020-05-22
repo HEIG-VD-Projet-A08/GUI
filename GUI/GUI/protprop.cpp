@@ -77,7 +77,7 @@ void ProtProp::on_btn_run_clicked()
         return;
     }
 
-<<<<<<< HEAD
+
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
@@ -128,16 +128,7 @@ void ProtProp::on_btn_run_clicked()
         return;
     }
     QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
-=======
 
-        socket = new ClientTcp(this, ip, port.toInt());
-        connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
-
-        socket->sendGreetings();
-        socket->sendData(file);
-    }	
-	
->>>>>>> master
 
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
@@ -197,8 +188,7 @@ void ProtProp::updateGraphe()
 
 }
 
-<<<<<<< HEAD
-=======
+
 void ProtProp::updateGraphe()
 {
     qDebug() << "Updating the graph";
@@ -217,7 +207,6 @@ void ProtProp::updateGraphe()
 
     ui->widget->graph(0)->setData(contX, contY);
     ui->widget->replot();
->>>>>>> master
 }
 
 void ProtProp::on_btn_stop_clicked()
@@ -388,7 +377,7 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
                   << std::endl;
     }
 }
-<<<<<<< HEAD
+
 
 /**
  * @brief ProtProp::on_pushButton_clicked permet de cacher la GUi pendant un certain temps. au maximum 1h
@@ -406,5 +395,3 @@ void ProtProp::on_pushButton_clicked()
     nanosleep(&ts, NULL);
     this->show();
 }
-=======
->>>>>>> master
