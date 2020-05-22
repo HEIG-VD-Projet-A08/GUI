@@ -34,7 +34,6 @@ private slots:
     void getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word);
     void updateGraphe();
 
-    void on_pushButton_clicked();
 
 
 private:
@@ -49,6 +48,5 @@ private:
 
     QVector<QVector<QString>> words;
     QVector<double> contX, contY1, contY2;
-    QString caract;
 };
 #endif // PROTPROP_H

@@ -1,4 +1,3 @@
-
 #include "protprop.h"
 #include "./ui_protprop.h"
 #include <fstream>
@@ -18,35 +17,26 @@ ProtProp::ProtProp(QWidget *parent)
     , ui(new Ui::ProtProp), socket(nullptr)
 {
     // set validators for input
-    QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
+    QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){2}"));
     QRegExpValidator *inputNumberPort = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
     QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
+    QRegExpValidator *inputWordMax = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
     QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
 
-    // set possibility for menu with "localisation" as default possibility
-    QStringList n;
-    n << "Localisation" << "Toxicité" ;
-
     ui->setupUi(this);
-    ui->comboBox->addItems(n);
 
     // enable validator for each input
     ui->IP->setText("127.0.0.1");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
     ui->CharMin->setValidator(inputNumberChar);
-    // TODO : à enlever en cas de test automatique
-    ui->CharMax->setText("100");
-    // TODO : à enlever en cas de test automatique
-    ui->CharMin->setText("10");
+    ui->CharMax->setText("30");
+    ui->CharMin->setText("20");
     ui->iterations->setValidator(inputIteration);
-    // TODO : à enlever en cas de test automatique
-    ui->iterations->setText("11");
-    ui->nbWords->setValidator(inputIteration);
-    // TODO : à enlever en cas de test automatique
+    ui->iterations->setText("100");
+    ui->nbWords->setValidator(inputWordMax);
     ui->nbWords->setText("10");
     ui->port->setValidator(inputNumberPort);
-    // TODO : à enlever en cas de test automatique
     ui->port->setText("9001");
 }
 
@@ -68,18 +58,17 @@ void ProtProp::on_btn_run_clicked()
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-    caract = ui->comboBox->currentText();
     nbCharsMin = ui->CharMin->text();
 
     // test que les arguments soient tous rempli
-    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || caract == ""){
+    if (nbCharsMax == "" || nbWords == "" || nbIter == ""){
         QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
         return;
     }
 
 
     // contrôle des bornes des paramètres entrés
-    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024){
+    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49 || nbCharsMin.toInt() > nbCharsMax.toInt() ){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
         return;
     }
@@ -101,7 +90,6 @@ void ProtProp::on_btn_run_clicked()
     xmlWriter.writeTextElement("Nb_char_Max", nbCharsMax);
     xmlWriter.writeTextElement("Nb_char_Min", nbCharsMin);
     xmlWriter.writeTextElement("Nb_iter", nbIter);
-    xmlWriter.writeTextElement("caracteristique", caract);
     xmlWriter.writeEndElement();
 
     // test si une erreur est survenue pendant l'écriture du fichier xml
@@ -110,9 +98,6 @@ void ProtProp::on_btn_run_clicked()
     }
 
     file.close();
-
-
-
 
     // test si le serveur est déjà instancié
     if (socket != nullptr){
@@ -131,6 +116,7 @@ void ProtProp::on_btn_run_clicked()
         return;
     }
     QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
+
 
 
 
@@ -165,7 +151,6 @@ void ProtProp::on_btn_run_clicked()
 
     connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(showPointToolTip(QMouseEvent*)));
 
-    updateGraphe();
 }
 
 void ProtProp::showPointToolTip(QMouseEvent *event)
@@ -407,19 +392,3 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
     }
 }
 
-/**
- * @brief ProtProp::on_pushButton_clicked permet de cacher la GUi pendant un certain temps. au maximum 1h
- */
-void ProtProp::on_pushButton_clicked()
-{
-    bool ok;
-    int temps = QInputDialog::getInt(this, tr("Durée de fermeture de la GUI en minutes"),
-                                         tr("User name:"), 1, 0, 60, 1, &ok);
-    if (!ok)
-        return;
-
-    this->hide();
-    struct timespec ts = { 1 * temps * 60, 0 };
-    nanosleep(&ts, NULL);
-    this->show();
-}
