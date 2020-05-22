@@ -29,6 +29,7 @@ int ClientTcp::sendGreetings(){
         QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
         socket->close();
         return 1;
+
     }
 
     socket->write( "Hello Server\n" );

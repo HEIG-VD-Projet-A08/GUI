@@ -18,35 +18,26 @@ ProtProp::ProtProp(QWidget *parent)
     , ui(new Ui::ProtProp), socket(nullptr)
 {
     // set validators for input
-    QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
+    QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){2}"));
     QRegExpValidator *inputNumberPort = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
     QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
+    QRegExpValidator *inputWordMax = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
     QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
 
-    // set possibility for menu with "localisation" as default possibility
-    QStringList n;
-    n << "Localisation" << "Toxicité" ;
-
     ui->setupUi(this);
-    ui->comboBox->addItems(n);
 
     // enable validator for each input
     ui->IP->setText("127.0.0.1");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
     ui->CharMin->setValidator(inputNumberChar);
-    // TODO : à enlever en cas de test automatique
-    ui->CharMax->setText("100");
-    // TODO : à enlever en cas de test automatique
-    ui->CharMin->setText("10");
+    ui->CharMax->setText("30");
+    ui->CharMin->setText("20");
     ui->iterations->setValidator(inputIteration);
-    // TODO : à enlever en cas de test automatique
-    ui->iterations->setText("11");
-    ui->nbWords->setValidator(inputIteration);
-    // TODO : à enlever en cas de test automatique
+    ui->iterations->setText("100");
+    ui->nbWords->setValidator(inputWordMax);
     ui->nbWords->setText("10");
     ui->port->setValidator(inputNumberPort);
-    // TODO : à enlever en cas de test automatique
     ui->port->setText("9001");
 }
 
@@ -68,18 +59,17 @@ void ProtProp::on_btn_run_clicked()
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-    caract = ui->comboBox->currentText();
     nbCharsMin = ui->CharMin->text();
 
     // test que les arguments soient tous rempli
-    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || caract == ""){
+    if (nbCharsMax == "" || nbWords == "" || nbIter == ""){
         QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
         return;
     }
 
 
     // contrôle des bornes des paramètres entrés
-    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024){
+    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49 || nbCharsMin.toInt() > nbCharsMax.toInt() ){
         QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
         return;
     }
@@ -101,7 +91,6 @@ void ProtProp::on_btn_run_clicked()
     xmlWriter.writeTextElement("Nb_char_Max", nbCharsMax);
     xmlWriter.writeTextElement("Nb_char_Min", nbCharsMin);
     xmlWriter.writeTextElement("Nb_iter", nbIter);
-    xmlWriter.writeTextElement("caracteristique", caract);
     xmlWriter.writeEndElement();
 
     // test si une erreur est survenue pendant l'écriture du fichier xml
@@ -142,6 +131,10 @@ void ProtProp::on_btn_run_clicked()
     contY1.clear();
     contY2.clear();
 
+    contX.clear();
+    contY1.clear();
+    contY2.clear();
+
     ui->widget->clearGraphs();
     ui->widget->replot();
     ui->widget->setInteraction(QCP::iRangeDrag, true);
@@ -156,7 +149,20 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->yAxis->setRange(0, sizeY);
     ui->widget->replot();
 
+    connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(showPointToolTip(QMouseEvent*)));
+
 }
+
+void ProtProp::showPointToolTip(QMouseEvent *event)
+{
+    int x = ui->widget->xAxis->pixelToCoord(event->pos().x());
+    double y = ui->widget->yAxis->pixelToCoord(event->pos().y());
+
+    y = roundf(y * 10000)/10000;
+
+    setToolTip(QString("%1 , %2").arg(x).arg(y));
+}
+
 void ProtProp::updateGraphe()
 {
     qDebug() << "Updating the graph";
@@ -164,10 +170,12 @@ void ProtProp::updateGraphe()
     double x;
     double y1;
     double y2;
-    getValuesFromServer(x, y1, y2);
+    QVector<QString> word;
+    getValuesFromServer(x, y1, y2, word);
     contX.push_back(x);
     contY1.push_back(y1);
     contY2.push_back(y2);
+    words.push_back(word);
 
    QCPGraph* dwPoints1 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
       dwPoints1->setAdaptiveSampling(false);
@@ -204,8 +212,7 @@ void ProtProp::on_btn_stop_clicked()
 
 void ProtProp::on_btn_save_actual_clicked()
 {
-    //snapshot system, to implement later
-    //save current graph and results so you can continue the same process later
+
     if (socket == nullptr){
         QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
         return;
@@ -218,26 +225,41 @@ void ProtProp::on_btn_save_actual_clicked()
  */
 void ProtProp::on_btn_save_res_clicked()
 {
+
     if (socket == nullptr){
-            QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
-            return;
+
+        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        return;
     }
+
     //save results in a file
     //save in a file (csv) x and y coordinates WITH the name of an individual (get it from the alg, best word in the 10words group of each iteration)
     std::ofstream myFile;
     myFile.open("savedResults.csv");
 
     std::ostringstream textToWriteOSS;
-    textToWriteOSS << "iteration, test, predict" << "\n";
-    for(int i = 0; i < nbIter.toInt(); i++)
+    textToWriteOSS << "iteration, test, predict";
+    for(int i = 1; i <= nbWords; i++)
     {
-        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
+        textToWriteOSS << "mot" << i << ", ";
+    }
+    textToWriteOSS << "\n";
+    for(int i = 0; i < contX.size(); i++)
+    {
+        QVector<QString> word = words[i];
+
+        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << ";\n";
+
+        for(int j = 0; j < word.size(); j++)
+        {
+            std::string wordString = word[j].toStdString();
+            textToWriteOSS << wordString << ", ";
+        }
     }
     std::string textToWrite = textToWriteOSS.str();
 
     myFile << textToWrite;
     myFile.close();
-	
 }
 
 /**
@@ -245,6 +267,10 @@ void ProtProp::on_btn_save_res_clicked()
  */
 void ProtProp::on_plot_clicked()
 {
+    if (socket == nullptr){
+        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        return;
+    }
 
     if (socket == nullptr){
             QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
@@ -262,13 +288,13 @@ void ProtProp::on_plot_clicked()
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
  */
-void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
+void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
 
     QString it;
     QString test;
     QString predict;
-    ReadXMLFile(it, test, predict);
+    ReadXMLFile(it, test, predict, word);
     QFile file("temp.xml");
     file.remove();
 
@@ -282,10 +308,9 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
  */
-void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
+void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector<QString> &word)
 {
     QXmlStreamReader Rxml;
-
 
     QDir dir;
     QString path(dir.currentPath());
@@ -335,6 +360,10 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
                          {
                              predict = Rxml.readElementText(); //Get the xml value
                          }
+                         else if(Rxml.name() == "word")
+                         {
+                             word.push_back(Rxml.readElementText());
+                         }
                          Rxml.readNext();
                      }
                      else
@@ -362,20 +391,3 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
     }
 }
 
-
-/**
- * @brief ProtProp::on_pushButton_clicked permet de cacher la GUi pendant un certain temps. au maximum 1h
- */
-void ProtProp::on_pushButton_clicked()
-{
-    bool ok;
-    int temps = QInputDialog::getInt(this, tr("Durée de fermeture de la GUI en minutes"),
-                                         tr("User name:"), 1, 0, 60, 1, &ok);
-    if (!ok)
-        return;
-
-    this->hide();
-    struct timespec ts = { 1 * temps * 60, 0 };
-    nanosleep(&ts, NULL);
-    this->show();
-}
