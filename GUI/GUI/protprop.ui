@@ -35,13 +35,6 @@
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout_6">
      <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>cacher la GUI</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="plot">
        <property name="text">
         <string>Màj graphique</string>
@@ -161,27 +154,6 @@
        </item>
        <item>
         <widget class="QLineEdit" name="port"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Caractéristique</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QComboBox" name="comboBox">
-         <item>
-          <property name="text">
-           <string>Localisation</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Toxicité</string>
-          </property>
-         </item>
-        </widget>
        </item>
       </layout>
      </item>

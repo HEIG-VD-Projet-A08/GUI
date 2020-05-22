@@ -23,12 +23,7 @@ ProtProp::ProtProp(QWidget *parent)
     QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
     QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
 
-    // set possibility for menu with "localisation" as default possibility
-    QStringList n;
-    n << "Localisation" << "Toxicité" ;
-
     ui->setupUi(this);
-    ui->comboBox->addItems(n);
 
     // enable validator for each input
     ui->IP->setText("127.0.0.1");
@@ -68,11 +63,10 @@ void ProtProp::on_btn_run_clicked()
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-    caract = ui->comboBox->currentText();
     nbCharsMin = ui->CharMin->text();
 
     // test que les arguments soient tous rempli
-    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || caract == ""){
+    if (nbCharsMax == "" || nbWords == "" || nbIter == ""){
         QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
         return;
     }
@@ -101,7 +95,6 @@ void ProtProp::on_btn_run_clicked()
     xmlWriter.writeTextElement("Nb_char_Max", nbCharsMax);
     xmlWriter.writeTextElement("Nb_char_Min", nbCharsMin);
     xmlWriter.writeTextElement("Nb_iter", nbIter);
-    xmlWriter.writeTextElement("caracteristique", caract);
     xmlWriter.writeEndElement();
 
     // test si une erreur est survenue pendant l'écriture du fichier xml
@@ -282,8 +275,6 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 
     y1 = test.toDouble();
     y2 = predict.toDouble();
-
-
 }
 
 
@@ -369,19 +360,4 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
     }
 }
 
-/**
- * @brief ProtProp::on_pushButton_clicked permet de cacher la GUi pendant un certain temps. au maximum 1h
- */
-void ProtProp::on_pushButton_clicked()
-{
-    bool ok;
-    int temps = QInputDialog::getInt(this, tr("Durée de fermeture de la GUI en minutes"),
-                                         tr("User name:"), 1, 0, 60, 1, &ok);
-    if (!ok)
-        return;
 
-    this->hide();
-    struct timespec ts = { 1 * temps * 60, 0 };
-    nanosleep(&ts, NULL);
-    this->show();
-}
