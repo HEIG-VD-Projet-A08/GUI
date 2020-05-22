@@ -132,6 +132,10 @@ void ProtProp::on_btn_run_clicked()
     contY1.clear();
     contY2.clear();
 
+    contX.clear();
+    contY1.clear();
+    contY2.clear();
+
     ui->widget->clearGraphs();
     ui->widget->replot();
     ui->widget->setInteraction(QCP::iRangeDrag, true);
@@ -146,6 +150,18 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->yAxis->setRange(0, sizeY);
     ui->widget->replot();
 
+    connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(showPointToolTip(QMouseEvent*)));
+
+}
+
+void ProtProp::showPointToolTip(QMouseEvent *event)
+{
+    int x = ui->widget->xAxis->pixelToCoord(event->pos().x());
+    double y = ui->widget->yAxis->pixelToCoord(event->pos().y());
+
+    y = roundf(y * 10000)/10000;
+
+    setToolTip(QString("%1 , %2").arg(x).arg(y));
 }
 
 void ProtProp::updateGraphe()
@@ -155,10 +171,12 @@ void ProtProp::updateGraphe()
     double x;
     double y1;
     double y2;
-    getValuesFromServer(x, y1, y2);
+    QVector<QString> word;
+    getValuesFromServer(x, y1, y2, word);
     contX.push_back(x);
     contY1.push_back(y1);
     contY2.push_back(y2);
+    words.push_back(word);
 
    QCPGraph* dwPoints1 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
       dwPoints1->setAdaptiveSampling(false);
@@ -192,8 +210,7 @@ void ProtProp::on_btn_stop_clicked()
 
 void ProtProp::on_btn_save_actual_clicked()
 {
-    //snapshot system, to implement later
-    //save current graph and results so you can continue the same process later
+
     if (socket == nullptr){
         QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
         return;
@@ -206,6 +223,7 @@ void ProtProp::on_btn_save_actual_clicked()
  */
 void ProtProp::on_btn_save_res_clicked()
 {
+
     if (socket == nullptr){
 
         QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
@@ -218,10 +236,24 @@ void ProtProp::on_btn_save_res_clicked()
     myFile.open("savedResults.csv");
 
     std::ostringstream textToWriteOSS;
-    textToWriteOSS << "iteration, test, predict" << "\n";
+
+    textToWriteOSS << "iteration, test, predict";
+    for(int i = 1; i <= nbWords; i++)
+    {
+        textToWriteOSS << "mot" << i << ", ";
+    }
+    textToWriteOSS << "\n";
     for(int i = 0; i < contX.size(); i++)
     {
-        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
+        QVector<QString> word = words[i];
+
+        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << ";\n";
+
+        for(int j = 0; j < word.size(); j++)
+        {
+            std::string wordString = word[j].toStdString();
+            textToWriteOSS << wordString << ", ";
+        }
     }
     std::string textToWrite = textToWriteOSS.str();
 
@@ -255,13 +287,13 @@ void ProtProp::on_plot_clicked()
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
  */
-void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
+void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
 
     QString it;
     QString test;
     QString predict;
-    ReadXMLFile(it, test, predict);
+    ReadXMLFile(it, test, predict, word);
     QFile file("temp.xml");
     file.remove();
 
@@ -275,7 +307,7 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
  */
-void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
+void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector<QString> &word)
 {
     QXmlStreamReader Rxml;
 
@@ -326,6 +358,10 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
                          else if(Rxml.name() == "predict")
                          {
                              predict = Rxml.readElementText(); //Get the xml value
+                         }
+                         else if(Rxml.name() == "word")
+                         {
+                             word.push_back(Rxml.readElementText());
                          }
                          Rxml.readNext();
                      }

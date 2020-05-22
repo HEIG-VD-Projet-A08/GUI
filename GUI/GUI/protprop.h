@@ -23,6 +23,7 @@ public:
     ~ProtProp();
 
 
+
 private slots:
     void on_btn_run_clicked();
     void on_btn_stop_clicked();
@@ -30,9 +31,12 @@ private slots:
     void on_btn_save_res_clicked();
     void on_plot_clicked();
 
-    void ReadXMLFile(QString &it, QString &score, QString &newValue);
-    void getValuesFromServer(double &x, double &y1, double &y2);
+    void showPointToolTip(QMouseEvent *event);
+    void ReadXMLFile(QString &it, QString &score, QString &newValue, QVector<QString> &word);
+    void getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word);
+
     void updateGraphe();
+
 
 private:
     Ui::ProtProp *ui;
@@ -44,6 +48,8 @@ private:
     QString port;
     ClientTcp *socket;
 
+    QVector<QVector<QString>> words;
     QVector<double> contX, contY1, contY2;
+
 };
 #endif // PROTPROP_H
