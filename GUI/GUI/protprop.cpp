@@ -304,7 +304,6 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
     QDir dir;
     QString path(dir.currentPath());
     QFile file(path + "/tmp.xml");
-    int i = 0;
 
     while(!file.open(QFile::ReadOnly | QFile::Text))
     {
@@ -352,8 +351,7 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
                          }
                          else if(Rxml.name() == "word")
                          {
-                             word[i] = Rxml.readElementText();
-                             i++;
+                             word.push_back(Rxml.readElementText());
                          }
                          Rxml.readNext();
                      }
