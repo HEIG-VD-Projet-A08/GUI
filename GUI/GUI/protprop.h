@@ -21,7 +21,7 @@ class ProtProp : public QMainWindow
 public:
     ProtProp(QWidget *parent = nullptr);
     ~ProtProp();
-    void getValuesFromServer(QVector<double> contX, QVector<double> contY);
+
 
 
 private slots:
@@ -52,5 +52,6 @@ private:
 
     QVector<QVector<QString>> words;
     QVector<double> contX, contY1, contY2;
+
 };
 #endif // PROTPROP_H

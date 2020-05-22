@@ -127,6 +127,7 @@ void ProtProp::on_btn_run_clicked()
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
 
+
     contX.clear();
     contY1.clear();
     contY2.clear();
@@ -299,8 +300,10 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QS
     file.remove();
 
     x = it.toDouble();
+
     y1 = test.toDouble();
     y2 = predict.toDouble();
+
 
 }
 
@@ -390,4 +393,5 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
                   << std::endl;
     }
 }
+
 
