@@ -22,7 +22,6 @@ public:
     ProtProp(QWidget *parent = nullptr);
     ~ProtProp();
 
-
 private slots:
     void on_btn_run_clicked();
     void on_btn_stop_clicked();
@@ -43,7 +42,7 @@ private:
     QString ip;
     QString port;
     ClientTcp *socket;
-
     QVector<double> contX, contY1, contY2;
+    bool isStopRequested;
 };
 #endif // PROTPROP_H

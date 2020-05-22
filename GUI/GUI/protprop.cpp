@@ -15,7 +15,7 @@
  */
 ProtProp::ProtProp(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::ProtProp), socket(nullptr)
+    , ui(new Ui::ProtProp), socket(nullptr), isStopRequested(false)
 {
     // set validators for input
     QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){2}"));
@@ -27,7 +27,7 @@ ProtProp::ProtProp(QWidget *parent)
     ui->setupUi(this);
 
     // enable validator for each input
-    ui->IP->setText("127.0.0.1");
+    ui->IP->setText("192.168.1.206");
     ui->IP->setValidator(ipValidator);
     ui->CharMax->setValidator(inputNumberChar);
     ui->CharMin->setValidator(inputNumberChar);
@@ -52,7 +52,6 @@ ProtProp::~ProtProp()
  */
 void ProtProp::on_btn_run_clicked()
 {
-
     nbCharsMax = ui->CharMax->text();
     nbWords = ui->nbWords->text();   //max around 20-50
     nbIter = ui->iterations->text(); //max around 1000
@@ -65,7 +64,6 @@ void ProtProp::on_btn_run_clicked()
         QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
         return;
     }
-
 
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49 || nbCharsMin.toInt() > nbCharsMax.toInt() ){
@@ -93,9 +91,8 @@ void ProtProp::on_btn_run_clicked()
     xmlWriter.writeEndElement();
 
     // test si une erreur est survenue pendant l'écriture du fichier xml
-    if(xmlWriter.hasError()){
+    if(xmlWriter.hasError())
         QMessageBox::warning(0, QString("Erreur"), QString("Problème lors de la génération du fichier de configuration"));
-    }
 
     file.close();
 
@@ -109,9 +106,10 @@ void ProtProp::on_btn_run_clicked()
     connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 
 
-    if(!socket->sendGreetings()){
+    if(!socket->sendGreetings())
         socket->sendData(file);
-    }else{
+    else{
+        QMessageBox::information(0, QString("Erreur"), QString("La connexion n'a pas pu être effectuée."));
         socket = nullptr;
         return;
     }
@@ -144,6 +142,10 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->replot();
 }
 
+/**
+ * @brief ProtProp::updateGraphe lorsque des données sont arrivent, on met le graphique à jour
+ *                               Si un arrêt à été demandé, on attend la dernière valeur et on ferme le client tcp
+ */
 void ProtProp::updateGraphe()
 {
     double x;
@@ -173,8 +175,18 @@ void ProtProp::updateGraphe()
     ui->widget->graph(1)->setData(contX, contY2);
     ui->widget->graph(1)->setPen(QPen(QBrush(Qt::red), 2));
     ui->widget->replot();
+
+    // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp
+    if(isStopRequested){
+        isStopRequested = true;
+        socket->TerminConnexion();
+        socket = nullptr;
+    }
 }
 
+/**
+ * @brief ProtProp::on_btn_stop_clicked envoie un message au serveur pour arrêter les calculs et ferme la connexion
+ */
 void ProtProp::on_btn_stop_clicked()
 {
     if (socket == nullptr){
@@ -186,15 +198,18 @@ void ProtProp::on_btn_stop_clicked()
     socket = nullptr;
 }
 
+/**
+ * @brief ProtProp::on_btn_save_actual_clicked envoie un message au serveur pour lui dire d'envoyer encore le dernier résultat et
+ *                                              après de fermer la connexion
+ */
 void ProtProp::on_btn_save_actual_clicked()
 {
-    //snapshot system, to implement later
-    //save current graph and results so you can continue the same process later
     if (socket == nullptr){
         QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
         return;
     }
     socket->sendStopRecovery();
+    isStopRequested = true;
 }
 
 /**
@@ -203,7 +218,6 @@ void ProtProp::on_btn_save_actual_clicked()
 void ProtProp::on_btn_save_res_clicked()
 {
     if (socket == nullptr){
-
         QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
         return;
     }
@@ -216,9 +230,8 @@ void ProtProp::on_btn_save_res_clicked()
     std::ostringstream textToWriteOSS;
     textToWriteOSS << "iteration, test, predict" << "\n";
     for(int i = 0; i < contX.size(); i++)
-    {
         textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
-    }
+
     std::string textToWrite = textToWriteOSS.str();
 
     myFile << textToWrite;
@@ -235,11 +248,6 @@ void ProtProp::on_plot_clicked()
         return;
     }
 
-    if (socket == nullptr){
-            QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
-            return;
-    }
-
     //Resets the view (usefull if we used the drag or the zoom feature)
     ui->widget->xAxis->setRange(0, nbIter.toInt());
     ui->widget->yAxis->setRange(0, 100);
@@ -252,7 +260,6 @@ void ProtProp::on_plot_clicked()
  */
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 {
-
     QString it;
     QString test;
     QString predict;
@@ -277,54 +284,34 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
     QString path(dir.currentPath());
     QFile file(path + "/tmp.xml");
 
-    while(!file.open(QFile::ReadOnly | QFile::Text))
-    {
-
-    }
+    while(!file.open(QFile::ReadOnly | QFile::Text));
 
     Rxml.setDevice(&file);
 
     Rxml.readNext();
 
-    while(!Rxml.atEnd())
-    {
-        if(Rxml.readNext() != QXmlStreamReader::EndDocument)
-        {
-            if(Rxml.isStartElement())
-            {
-                if(Rxml.name() == "result")
-                {
+    while(!Rxml.atEnd()){
+        if(Rxml.readNext() != QXmlStreamReader::EndDocument){
+            if(Rxml.isStartElement()){
+                if(Rxml.name() == "result"){
                     Rxml.readNext();
                 }
-                while(!Rxml.atEnd())
-                {
-                     if(Rxml.isEndElement())
-                     {
+                while(!Rxml.atEnd()){
+                     if(Rxml.isEndElement()){
                          Rxml.readNext();
                          break;
-                     }
-                     else if(Rxml.isCharacters())
-                     {
+                     }else if(Rxml.isCharacters()){
                          Rxml.readNext();
-                     }
-                     else if(Rxml.isStartElement())
-                     {
-                         if(Rxml.name() == "it")
-                         {
+                     }else if(Rxml.isStartElement()){
+                         if(Rxml.name() == "it"){
                             it = Rxml.readElementText();   //Get the xml value
-                         }
-                         else if(Rxml.name() == "test")
-                         {
+                         }else if(Rxml.name() == "test"){
                             test = Rxml.readElementText();   //Get the xml value
-                         }
-                         else if(Rxml.name() == "predict")
-                         {
+                         }else if(Rxml.name() == "predict"){
                              predict = Rxml.readElementText(); //Get the xml value
                          }
                          Rxml.readNext();
-                     }
-                     else
-                     {
+                     }else{
                         Rxml.readNext();
                      }
                 }
@@ -334,14 +321,11 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
 
     file.close();
 
-    if (Rxml.hasError())
-    {
+    if (Rxml.hasError()){
        std::cerr << "Error: Failed to parse file "
                  << qPrintable("temp.xml") << ": "
                  << qPrintable(Rxml.errorString()) << std::endl;
-        }
-    else if (file.error() != QFile::NoError)
-    {
+    }else if (file.error() != QFile::NoError){
         std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
                   << ": " << qPrintable(file.errorString())
                   << std::endl;
