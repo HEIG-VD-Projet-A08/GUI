@@ -50,6 +50,7 @@ ProtProp::ProtProp(QWidget *parent)
     ui->port->setText("9001");
 }
 
+
 ProtProp::~ProtProp()
 {
     delete ui;
@@ -61,6 +62,7 @@ ProtProp::~ProtProp()
  */
 void ProtProp::on_btn_run_clicked()
 {
+
     nbCharsMax = ui->CharMax->text();
     nbWords = ui->nbWords->text();   //max around 20-50
     nbIter = ui->iterations->text(); //max around 1000
@@ -74,6 +76,7 @@ void ProtProp::on_btn_run_clicked()
         QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
         return;
     }
+
 
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024){
@@ -126,6 +129,7 @@ void ProtProp::on_btn_run_clicked()
     }
     QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
 
+
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
     //wait for the algo to start sending us results
@@ -134,10 +138,16 @@ void ProtProp::on_btn_run_clicked()
     int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
     int sizeY = 100; //length of Y axis, represents success rate
 
+
+    contX.clear();
+    contY1.clear();
+    contY2.clear();
+
     ui->widget->clearGraphs();
     ui->widget->replot();
     ui->widget->setInteraction(QCP::iRangeDrag, true);
     ui->widget->setInteraction(QCP::iRangeZoom, true);
+    ui->widget->addGraph();
     ui->widget->addGraph();
     // give the axes some labels:
     ui->widget->xAxis->setLabel("iterations");
@@ -146,27 +156,43 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->xAxis->setRange(0, sizeX);
     ui->widget->yAxis->setRange(0, sizeY);
     ui->widget->replot();
-}
 
+}
 void ProtProp::updateGraphe()
 {
     qDebug() << "Updating the graph";
+
     double x;
-    double y;
-    getValuesFromServer(x, y);
+    double y1;
+    double y2;
+    getValuesFromServer(x, y1, y2);
     contX.push_back(x);
-    contY.push_back(y);
+    contY1.push_back(y1);
+    contY2.push_back(y2);
 
-   QCPGraph* dwPoints = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
-      dwPoints->setAdaptiveSampling(false);
-      dwPoints->setLineStyle(QCPGraph::lsNone);
-      dwPoints->setScatterStyle(QCPScatterStyle::ssCircle);
-      dwPoints->setPen(QPen(QBrush(Qt::red), 2));
-      dwPoints->addData(contX, contY);
+   QCPGraph* dwPoints1 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+      dwPoints1->setAdaptiveSampling(false);
+      dwPoints1->setLineStyle(QCPGraph::lsNone);
+      dwPoints1->setScatterStyle(QCPScatterStyle::ssCircle);
+      dwPoints1->setPen(QPen(QBrush(Qt::blue), 2));
+      dwPoints1->addData(contX, contY1);
 
-    ui->widget->graph(0)->setData(contX, contY);
+  QCPGraph* dwPoints2 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
+     dwPoints2->setAdaptiveSampling(false);
+     dwPoints2->setLineStyle(QCPGraph::lsNone);
+     dwPoints2->setScatterStyle(QCPScatterStyle::ssTriangle);
+     dwPoints2->setPen(QPen(QBrush(Qt::red), 2));
+     dwPoints2->addData(contX, contY2);
+
+    ui->widget->graph(0)->setData(contX, contY1);
+    ui->widget->graph(0)->setPen(QPen(QBrush(Qt::blue), 2));
+    ui->widget->graph(1)->setData(contX, contY2);
+    ui->widget->graph(1)->setPen(QPen(QBrush(Qt::red), 2));
     ui->widget->replot();
+
 }
+
+
 
 void ProtProp::on_btn_stop_clicked()
 {
@@ -194,6 +220,7 @@ void ProtProp::on_btn_save_actual_clicked()
 void ProtProp::on_btn_save_res_clicked()
 {
     if (socket == nullptr){
+
         QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
         return;
     }
@@ -201,12 +228,13 @@ void ProtProp::on_btn_save_res_clicked()
     //save results in a file
     //save in a file (csv) x and y coordinates WITH the name of an individual (get it from the alg, best word in the 10words group of each iteration)
     std::ofstream myFile;
-    myFile.open("/home/reds/Desktop/savedResults.csv");
+    myFile.open("savedResults.csv");
 
     std::ostringstream textToWriteOSS;
+    textToWriteOSS << "iteration, test, predict" << "\n";
     for(int i = 0; i < nbIter.toInt(); i++)
     {
-        textToWriteOSS << "" << contNameProt[i] << ", " << contX[i] << ", " << contY[i] << "\n";
+        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
     }
     std::string textToWrite = textToWriteOSS.str();
 
@@ -224,6 +252,11 @@ void ProtProp::on_plot_clicked()
         return;
     }
 
+    if (socket == nullptr){
+            QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+            return;
+    }
+
     //Resets the view (usefull if we used the drag or the zoom feature)
     ui->widget->xAxis->setRange(0, nbIter.toInt());
     ui->widget->yAxis->setRange(0, 100);
@@ -235,26 +268,29 @@ void ProtProp::on_plot_clicked()
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
  */
-void ProtProp::getValuesFromServer(double &x, double &y)
+void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 {
-    //waiting on code from Jéjé to know how to recup the content, ideally I would want the values to be put directly in those containers.
-    // TO DO
 
     QString it;
-    QString score;
-    ReadXMLFile(it, score);
+    QString test;
+    QString predict;
+    ReadXMLFile(it, test, predict);
     QFile file("temp.xml");
     file.remove();
 
     x = it.toDouble();
-    y = score.toDouble();
+
+    y1 = test.toDouble();
+    y2 = predict.toDouble();
+
+
 }
 
 
 /**
- * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score
+ * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
  */
-void ProtProp::ReadXMLFile(QString &it, QString &score)
+void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
 {
     QXmlStreamReader Rxml;
 
@@ -294,18 +330,17 @@ void ProtProp::ReadXMLFile(QString &it, QString &score)
                      }
                      else if(Rxml.isStartElement())
                      {
-                         /*
-                         if(Rxml.name() == "name")
-                         {
-                            ReadElement();
-                         }*/
                          if(Rxml.name() == "it")
                          {
                             it = Rxml.readElementText();   //Get the xml value
                          }
-                         else if(Rxml.name() == "score")
+                         else if(Rxml.name() == "test")
                          {
-                            score = Rxml.readElementText();   //Get the xml value
+                            test = Rxml.readElementText();   //Get the xml value
+                         }
+                         else if(Rxml.name() == "predict")
+                         {
+                             predict = Rxml.readElementText(); //Get the xml value
                          }
                          Rxml.readNext();
                      }
@@ -333,6 +368,7 @@ void ProtProp::ReadXMLFile(QString &it, QString &score)
                   << std::endl;
     }
 }
+
 /**
  * @brief ProtProp::on_pushButton_clicked permet de cacher la GUi pendant un certain temps. au maximum 1h
  */
