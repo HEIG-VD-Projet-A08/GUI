@@ -29,7 +29,7 @@ private slots:
     void on_btn_save_actual_clicked();
     void on_btn_save_res_clicked();
     void on_plot_clicked();
-
+    void showPointToolTip(QMouseEvent *event);
     void ReadXMLFile(QString &it, QString &score, QString &newValue, QVector<QString> &word);
     void getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word);
     void updateGraphe();
