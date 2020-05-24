@@ -62,7 +62,7 @@ void ClientTcp::TerminConnexion(){
         return;
     }
 
-    socket->write( "BYE" );
+    socket->write( "BYE\n" );
     socket->disconnectFromHost();
     socket->close();
 }

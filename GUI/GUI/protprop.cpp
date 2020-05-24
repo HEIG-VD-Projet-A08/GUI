@@ -178,7 +178,7 @@ void ProtProp::updateGraphe()
 
     // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp
     if(isStopRequested){
-        isStopRequested = true;
+        isStopRequested = false;
         socket->TerminConnexion();
         socket = nullptr;
     }
