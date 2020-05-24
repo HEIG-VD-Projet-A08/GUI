@@ -175,13 +175,6 @@ void ProtProp::updateGraphe()
     ui->widget->graph(1)->setData(contX, contY2);
     ui->widget->graph(1)->setPen(QPen(QBrush(Qt::red), 2));
     ui->widget->replot();
-
-    // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp
-    if(isStopRequested){
-        isStopRequested = false;
-        socket->TerminConnexion();
-        socket = nullptr;
-    }
 }
 
 /**
@@ -260,7 +253,7 @@ void ProtProp::on_plot_clicked()
  */
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 {
-    QString it;
+    QString it = "0";
     QString test;
     QString predict;
     ReadXMLFile(it, test, predict);
@@ -278,6 +271,7 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
  */
 void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
 {
+    int memIt = it.toInt();
     QXmlStreamReader Rxml;
 
     QDir dir;
@@ -329,5 +323,12 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
         std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
                   << ": " << qPrintable(file.errorString())
                   << std::endl;
+    }
+
+    // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp
+    if(isStopRequested && memIt != it.toInt()){
+        isStopRequested = false;
+        socket->TerminConnexion();
+        socket = nullptr;
     }
 }

@@ -4,5 +4,4 @@
 	<!ELEMENT Nb_char_Max (#PCDATA)>
     <!ELEMENT Nb_char_Min (#PCDATA)>
 	<!ELEMENT Nb_iter (#PCDATA)>
-	<!ELEMENT caracteristique (#PCDATA)>
 ]>
