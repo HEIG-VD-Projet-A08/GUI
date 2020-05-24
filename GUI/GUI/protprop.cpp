@@ -140,21 +140,32 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->xAxis->setRange(0, sizeX);
     ui->widget->yAxis->setRange(0, sizeY);
     ui->widget->replot();
+
+    connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(showPointToolTip(QMouseEvent*)));
+
 }
 
-/**
- * @brief ProtProp::updateGraphe lorsque des données sont arrivent, on met le graphique à jour
- *                               Si un arrêt à été demandé, on attend la dernière valeur et on ferme le client tcp
- */
+void ProtProp::showPointToolTip(QMouseEvent *event)
+{
+    int x = ui->widget->xAxis->pixelToCoord(event->pos().x());
+    double y = ui->widget->yAxis->pixelToCoord(event->pos().y());
+
+    y = roundf(y * 10000)/10000;
+
+    setToolTip(QString("%1 , %2").arg(x).arg(y));
+}
+
 void ProtProp::updateGraphe()
 {
     double x;
     double y1;
     double y2;
-    getValuesFromServer(x, y1, y2);
+    QVector<QString> word;
+    getValuesFromServer(x, y1, y2, word);
     contX.push_back(x);
     contY1.push_back(y1);
     contY2.push_back(y2);
+    words.push_back(word);
 
    QCPGraph* dwPoints1 = new QCPGraph(ui->widget->xAxis, ui->widget->yAxis);
       dwPoints1->setAdaptiveSampling(false);
@@ -221,10 +232,25 @@ void ProtProp::on_btn_save_res_clicked()
     myFile.open("savedResults.csv");
 
     std::ostringstream textToWriteOSS;
-    textToWriteOSS << "iteration, test, predict" << "\n";
-    for(int i = 0; i < contX.size(); i++)
-        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << "\n";
 
+    textToWriteOSS << "iteration, test, predict";
+    for(int i = 1; i <= nbWords; i++)
+    {
+        textToWriteOSS << "mot" << i << ", ";
+    }
+    textToWriteOSS << "\n";
+    for(int i = 0; i < contX.size(); i++)
+    {
+        QVector<QString> word = words[i];
+
+        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << ";\n";
+
+        for(int j = 0; j < word.size(); j++)
+        {
+            std::string wordString = word[j].toStdString();
+            textToWriteOSS << wordString << ", ";
+        }
+    }
     std::string textToWrite = textToWriteOSS.str();
 
     myFile << textToWrite;
@@ -251,12 +277,12 @@ void ProtProp::on_plot_clicked()
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
  */
-void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
+void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
     QString it = "0";
     QString test;
     QString predict;
-    ReadXMLFile(it, test, predict);
+    ReadXMLFile(it, test, predict, word);
     QFile file("temp.xml");
     file.remove();
 
@@ -269,7 +295,7 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2)
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
  */
-void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
+void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector<QString> &word)
 {
     int memIt = it.toInt();
     QXmlStreamReader Rxml;
@@ -303,6 +329,8 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict)
                             test = Rxml.readElementText();   //Get the xml value
                          }else if(Rxml.name() == "predict"){
                              predict = Rxml.readElementText(); //Get the xml value
+                         }else if(Rxml.name() == "word"){
+                             word.push_back(Rxml.readElementText());
                          }
                          Rxml.readNext();
                      }else{
