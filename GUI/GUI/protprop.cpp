@@ -2,6 +2,7 @@
 #include "protprop.h"
 #include "./ui_protprop.h"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <unistd.h>
 #include <QXmlStreamReader>
@@ -293,6 +294,7 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
     QXmlStreamReader Rxml;
 
     QDir dir;
+    QString path(dir.currentPath());
     QFile file(dir.currentPath() + "/tmp.xml");
 
     while(!file.open(QFile::ReadOnly | QFile::Text));
@@ -333,10 +335,20 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
 
     file.close();
 
-    if (Rxml.hasError())
-        message->Error_7(Rxml.errorString());
-    else if (file.error() != QFile::NoError)
-        message->Error_8(file.errorString());
+//    if (Rxml.hasError())
+//        message->Error_7(Rxml.errorString());
+//    else if (file.error() != QFile::NoError)
+//        message->Error_8(file.errorString());
+
+    if (Rxml.hasError()){
+       std::cerr << "Error: Failed to parse file "
+                 << qPrintable("temp.xml") << ": "
+                 << qPrintable(Rxml.errorString()) << std::endl;
+    }else if (file.error() != QFile::NoError){
+        std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
+                  << ": " << qPrintable(file.errorString())
+                  << std::endl;
+    }
 
 
     // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp

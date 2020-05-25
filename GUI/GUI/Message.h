@@ -8,7 +8,6 @@ class Message: public QObject
     Q_OBJECT
 public:
     Message(QWidget *parent);
-    ~Message();
 
     void Error_0(){
         QMessageBox::warning(0, QString("Erreur #0"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
@@ -39,11 +38,11 @@ public:
     }
 
     void Error_7(QString erreurType){
-        QMessageBox::warning(0, QString("Erreur #7"), QString("Le Parsing XML de temp.xml a échoué avec cette erreur: " + erreurType));
+        QMessageBox::warning(0, QString("Erreur #7"), QString("Le Parsing XML de tmp.xml a échoué avec cette erreur: " + erreurType));
     }
 
     void Error_8(QString erreurType){
-        QMessageBox::warning(0, QString("Erreur #8"), QString("Le traitement du fichier temp.xml a échoué avec cette erreur: " + erreurType));
+        QMessageBox::warning(0, QString("Erreur #8"), QString("Le traitement du fichier tmp.xml a échoué avec cette erreur: " + erreurType));
     }
 
 
