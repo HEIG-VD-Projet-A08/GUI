@@ -359,4 +359,9 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
         socket->TerminConnexion();
         socket = nullptr;
     }
+
+    if(it.toInt() == nbIter.toInt()) {
+        socket->TerminConnexion();
+        socket = nullptr;
+    }
 }
