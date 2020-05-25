@@ -53,21 +53,21 @@ ProtProp::~ProtProp()
 void ProtProp::on_btn_run_clicked()
 {
     nbCharsMax = ui->CharMax->text();
+    nbCharsMin = ui->CharMin->text();
     nbWords = ui->nbWords->text();   //max around 20-50
     nbIter = ui->iterations->text(); //max around 1000
     ip = ui->IP->text();
     port = ui->port->text();
-    nbCharsMin = ui->CharMin->text();
 
     // test que les arguments soient tous rempli
-    if (nbCharsMax == "" || nbWords == "" || nbIter == ""){
-        QMessageBox::warning(0, QString("Erreur"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || nbCharsMin == "" || ip == "" || port == "" ){
+        QMessageBox::warning(0, QString("Erreur #0"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
         return;
     }
 
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49 || nbCharsMin.toInt() > nbCharsMax.toInt() ){
-        QMessageBox::warning(0, QString("Erreur de saisie"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
+        QMessageBox::warning(0, QString("Erreur #1"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
         return;
     }
 
@@ -92,13 +92,13 @@ void ProtProp::on_btn_run_clicked()
 
     // test si une erreur est survenue pendant l'écriture du fichier xml
     if(xmlWriter.hasError())
-        QMessageBox::warning(0, QString("Erreur"), QString("Problème lors de la génération du fichier de configuration"));
+        QMessageBox::warning(0, QString("Erreur #2"), QString("Problème lors de la génération du fichier de configuration"));
 
     file.close();
 
     // test si le serveur est déjà instancié
     if (socket != nullptr){
-        QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp a déjà été instancié."));
+        QMessageBox::information(0, QString("Erreur #3"), QString("Le serveur Tcp a déjà été instancié."));
         return;
     }
 
@@ -109,11 +109,11 @@ void ProtProp::on_btn_run_clicked()
     if(!socket->sendGreetings())
         socket->sendData(file);
     else{
-        QMessageBox::information(0, QString("Erreur"), QString("La connexion n'a pas pu être effectuée."));
+        QMessageBox::information(0, QString("Erreur #4"), QString("La connexion n'a pas pu être effectuée."));
         socket = nullptr;
         return;
     }
-    QMessageBox::information(0, QString(" "), QString("Le programme va être exécuté."));
+    QMessageBox::information(0, QString("Indication #0"), QString("Le programme va être exécuté."));
 
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
