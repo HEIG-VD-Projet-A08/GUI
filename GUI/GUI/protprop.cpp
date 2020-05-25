@@ -2,12 +2,12 @@
 #include "protprop.h"
 #include "./ui_protprop.h"
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <unistd.h>
 #include <QXmlStreamReader>
 #include <QRegExpValidator>
-#include <QInputDialog>
+#include "Message.h"
+
 
 /**
  * @brief ProtProp::ProtProp définit les regex pour les paramètres,
@@ -15,14 +15,14 @@
  */
 ProtProp::ProtProp(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::ProtProp), socket(nullptr), isStopRequested(false)
+    , ui(new Ui::ProtProp), socket(nullptr), isStopRequested(false), message()
 {
     // set validators for input
-    QRegExpValidator *inputNumberChar = new QRegExpValidator(  QRegExp("(?:[0-9]){2}"));
-    QRegExpValidator *inputNumberPort = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
-    QRegExpValidator *inputIteration = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
-    QRegExpValidator *inputWordMax = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
-    QRegExpValidator *ipValidator = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
+    QRegExpValidator *inputNumberChar   = new QRegExpValidator(  QRegExp("(?:[0-9]){2}"));
+    QRegExpValidator *inputNumberPort   = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
+    QRegExpValidator *inputIteration    = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
+    QRegExpValidator *inputWordMax      = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
+    QRegExpValidator *ipValidator       = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
 
     ui->setupUi(this);
 
@@ -52,29 +52,28 @@ ProtProp::~ProtProp()
  */
 void ProtProp::on_btn_run_clicked()
 {
-    nbCharsMax = ui->CharMax->text();
-    nbCharsMin = ui->CharMin->text();
-    nbWords = ui->nbWords->text();   //max around 20-50
-    nbIter = ui->iterations->text(); //max around 1000
-    ip = ui->IP->text();
-    port = ui->port->text();
+    nbCharsMax  = ui->CharMax->text();
+    nbCharsMin  = ui->CharMin->text();
+    nbWords     = ui->nbWords->text();
+    nbIter      = ui->iterations->text();
+    ip          = ui->IP->text();
+    port        = ui->port->text();
 
     // test que les arguments soient tous rempli
     if (nbCharsMax == "" || nbWords == "" || nbIter == "" || nbCharsMin == "" || ip == "" || port == "" ){
-        QMessageBox::warning(0, QString("Erreur #0"), QString("Les paramètres ont mal été saisi. Le programme n'a pas été exécuté."));
+        message->Error_0();
         return;
     }
 
     // contrôle des bornes des paramètres entrés
     if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49 || nbCharsMin.toInt() > nbCharsMax.toInt() ){
-        QMessageBox::warning(0, QString("Erreur #1"), QString("Les paramètres ne sont pas valides. Le programme n'a pas été exécuté."));
+        message->Error_1();
         return;
     }
 
     // écriture du fichier XML dans le dossier de l'application
     QDir dir;
-    QString path(dir.currentPath());
-    QFile file(path + "/option.xml");
+    QFile file(dir.currentPath() + "/option.xml");
 
     // partie client TCP
     file.open(QIODevice::WriteOnly);
@@ -92,28 +91,27 @@ void ProtProp::on_btn_run_clicked()
 
     // test si une erreur est survenue pendant l'écriture du fichier xml
     if(xmlWriter.hasError())
-        QMessageBox::warning(0, QString("Erreur #2"), QString("Problème lors de la génération du fichier de configuration"));
+        message->Error_2();
 
     file.close();
 
     // test si le serveur est déjà instancié
     if (socket != nullptr){
-        QMessageBox::information(0, QString("Erreur #3"), QString("Le serveur Tcp a déjà été instancié."));
+        message->Error_3();
         return;
     }
 
     socket = new ClientTcp(this, ip, port.toInt());
     connect(socket, &ClientTcp::readResultXML, this, &ProtProp::updateGraphe);
 
-
     if(!socket->sendGreetings())
         socket->sendData(file);
     else{
-        QMessageBox::information(0, QString("Erreur #4"), QString("La connexion n'a pas pu être effectuée."));
+        message->Error_4();
         socket = nullptr;
         return;
     }
-    QMessageBox::information(0, QString("Indication #0"), QString("Le programme va être exécuté."));
+    message->indication_0();
 
     //start prog with variables above
     //have to send some of those informations to the server to run the algo
@@ -142,7 +140,6 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->replot();
 
     connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(showPointToolTip(QMouseEvent*)));
-
 }
 
 void ProtProp::showPointToolTip(QMouseEvent *event)
@@ -194,12 +191,11 @@ void ProtProp::updateGraphe()
 void ProtProp::on_btn_stop_clicked()
 {
     if (socket == nullptr){
-        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        message->Error_5();
         return;
     }
     socket->sendStop();
-    socket->TerminConnexion();
-    socket = nullptr;
+    quitAndResetRessources();
 }
 
 /**
@@ -209,7 +205,7 @@ void ProtProp::on_btn_stop_clicked()
 void ProtProp::on_btn_save_actual_clicked()
 {
     if (socket == nullptr){
-        QMessageBox::information(0, QString("Erreur"), QString("Le serveur Tcp n'a pas été instancié."));
+        message->Error_5();
         return;
     }
     socket->sendStopRecovery();
@@ -222,7 +218,7 @@ void ProtProp::on_btn_save_actual_clicked()
 void ProtProp::on_btn_save_res_clicked()
 {
     if (socket == nullptr){
-        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        message->Error_5();
         return;
     }
 
@@ -234,19 +230,16 @@ void ProtProp::on_btn_save_res_clicked()
     std::ostringstream textToWriteOSS;
 
     textToWriteOSS << "iteration, test, predict";
-    for(int i = 1; i <= nbWords; i++)
-    {
+    for(int i = 1; i <= nbWords; i++){
         textToWriteOSS << "mot" << i << ", ";
     }
     textToWriteOSS << "\n";
-    for(int i = 0; i < contX.size(); i++)
-    {
+    for(int i = 0; i < contX.size(); i++){
         QVector<QString> word = words[i];
 
         textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << ";\n";
 
-        for(int j = 0; j < word.size(); j++)
-        {
+        for(int j = 0; j < word.size(); j++){
             std::string wordString = word[j].toStdString();
             textToWriteOSS << wordString << ", ";
         }
@@ -263,7 +256,7 @@ void ProtProp::on_btn_save_res_clicked()
 void ProtProp::on_plot_clicked()
 {
     if (socket == nullptr){
-        QMessageBox::information(0, QString("Erreur"), QString("Le client Tcp n'a pas été instancié."));
+        message->Error_5();
         return;
     }
 
@@ -287,7 +280,6 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QS
     file.remove();
 
     x = it.toDouble();
-
     y1 = test.toDouble();
     y2 = predict.toDouble();
 }
@@ -301,13 +293,11 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
     QXmlStreamReader Rxml;
 
     QDir dir;
-    QString path(dir.currentPath());
-    QFile file(path + "/tmp.xml");
+    QFile file(dir.currentPath() + "/tmp.xml");
 
     while(!file.open(QFile::ReadOnly | QFile::Text));
 
     Rxml.setDevice(&file);
-
     Rxml.readNext();
 
     while(!Rxml.atEnd()){
@@ -343,25 +333,28 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
 
     file.close();
 
-    if (Rxml.hasError()){
-       std::cerr << "Error: Failed to parse file "
-                 << qPrintable("temp.xml") << ": "
-                 << qPrintable(Rxml.errorString()) << std::endl;
-    }else if (file.error() != QFile::NoError){
-        std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
-                  << ": " << qPrintable(file.errorString())
-                  << std::endl;
-    }
+    if (Rxml.hasError())
+        message->Error_7(Rxml.errorString());
+    else if (file.error() != QFile::NoError)
+        message->Error_8(file.errorString());
+
 
     // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp
     if(isStopRequested && memIt != it.toInt()){
         isStopRequested = false;
-        socket->TerminConnexion();
-        socket = nullptr;
+        quitAndResetRessources();
     }
 
+    // si on a effectué le nombre d'itération voulue on termine la connexion
     if(it.toInt() == nbIter.toInt()) {
-        socket->TerminConnexion();
-        socket = nullptr;
+        quitAndResetRessources();
     }
+}
+
+/**
+ * @brief resetRessources permet de réinitialiser l'environnement pour un nouveau calcul
+ */
+void ProtProp::quitAndResetRessources(){
+    socket->TerminConnexion();
+    socket = nullptr;
 }

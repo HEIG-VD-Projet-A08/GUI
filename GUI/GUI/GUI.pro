@@ -22,6 +22,7 @@ SOURCES += \
     qcustomplot.cpp
 
 HEADERS += \
+    Message.h \
     clienttcp.h \
     protprop.h \
     qcustomplot.h

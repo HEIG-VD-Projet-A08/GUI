@@ -5,9 +5,8 @@
 #include <QtNetwork>
 #include <QTcpSocket>
 #include <QAbstractSocket>
-#include <QDebug>
 #include <QtCore>
-#include <QMessageBox>
+#include "Message.h"
 
 class ClientTcp : public QObject
 {
@@ -17,6 +16,7 @@ private:
     QTcpSocket *socket;     // pointeur sur la socket vers le serveur
     QString add;            // adresse de la socket
     int port;               // port de la socket
+    Message *message;
 
 public:
     /**

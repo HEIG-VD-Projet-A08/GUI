@@ -2,12 +2,6 @@
 #define PROTPROP_H
 
 #include <QMainWindow>
-#include <QFileDialog>
-#include <QtCore>
-#include <QtNetwork>
-
-#include <QTcpSocket>
-
 #include "clienttcp.h"
 
 QT_BEGIN_NAMESPACE
@@ -46,5 +40,8 @@ private:
     QVector<QVector<QString>> words;
     QVector<double> contX, contY1, contY2;
     bool isStopRequested;
+    Message *message;
+
+    void quitAndResetRessources();
 };
 #endif // PROTPROP_H

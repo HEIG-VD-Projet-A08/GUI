@@ -1,22 +1,12 @@
 #include "clienttcp.h"
-#include <QObject>
-#include <QTcpSocket>
-#include <QAbstractSocket>
-#include <QDebug>
-#include <QtCore>
-#include <QtNetwork>
-#include <iostream>
 
 
-ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent){
+ClientTcp::ClientTcp(QObject *parent, QString ipAdd, int port) : parent(parent), add(ipAdd), port(port), message(){
     // partie client TCP
     socket = new QTcpSocket( parent );
 
     connect(socket, &QTcpSocket::readyRead, this, &ClientTcp::readyRead);
     connect(socket, &QTcpSocket::readyRead, this, &ClientTcp::readResultXML);
-
-    this->add = ipAdd;
-    this->port = port;
 
     socket->connectToHost(ipAdd, port);
 }
@@ -26,8 +16,7 @@ ClientTcp::~ClientTcp(){
 
 int ClientTcp::sendGreetings(){
     if(!socket->waitForConnected()){
-        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
-        socket->close();
+        message->Error_4();
         return 1;
     }
 
@@ -37,8 +26,8 @@ int ClientTcp::sendGreetings(){
 
 void ClientTcp::sendStop(){
     // if disconnect
-    if(!socket->waitForConnected(1000)){
-        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
+    if(!socket->waitForConnected()){
+        message->Error_4();
         return;
     }
 
@@ -47,8 +36,8 @@ void ClientTcp::sendStop(){
 
 void ClientTcp::sendStopRecovery(){
     // if disconnect
-    if(!socket->waitForConnected(1000)){
-        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
+    if(!socket->waitForConnected()){
+        message->Error_4();
         return;
     }
 
@@ -57,8 +46,8 @@ void ClientTcp::sendStopRecovery(){
 
 void ClientTcp::TerminConnexion(){
     // if disconnect
-    if(!socket->waitForConnected(1000)){
-        QMessageBox::information(0, QString("Erreur de connexion"), QString("La connexion avec le serveur n'a pas pu être effectuée."));
+    if(!socket->waitForConnected()){
+        message->Error_4();
         return;
     }
 
@@ -71,9 +60,7 @@ void ClientTcp::sendData(QFile &file){
     file.open(QIODevice::ReadOnly);
     QByteArray mydata=file.readAll();
 
-    socket->write( "START\n" );
-    socket->write( mydata );
-    socket->write("\n");
+    socket->write( "START\n" + mydata + "\n");
     file.close();
     socket->disconnectFromHost();
     while(!socket->waitForBytesWritten());
@@ -83,14 +70,13 @@ void ClientTcp::sendData(QFile &file){
 void ClientTcp::readyRead()
 {
     // if disconnect
-    if(!socket->waitForConnected(1000)){
-        qDebug() << "Error: " << socket->errorString();
+    if(!socket->waitForConnected()){
+        message->Error_6();
         return;
     }
 
     // read the data from the socket
     QByteArray temp = socket->readAll();
-    qDebug() << temp;
 
     QDir dir;
     QString path(dir.currentPath());
