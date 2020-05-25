@@ -334,9 +334,9 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
     file.close();
 
     if (Rxml.hasError())
-        message->Error_7(Rxml.errorString());
+        message->Error_6(Rxml.errorString());
     else if (file.error() != QFile::NoError)
-        message->Error_8(file.errorString());
+        message->Error_7(file.errorString());
 
 
     // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp

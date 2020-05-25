@@ -69,18 +69,11 @@ void ClientTcp::sendData(QFile &file){
 
 void ClientTcp::readyRead()
 {
-    // if disconnect
-    if(!socket->waitForConnected()){
-        message->Error_6();
-        return;
-    }
-
     // read the data from the socket
     QByteArray temp = socket->readAll();
 
     QDir dir;
-    QString path(dir.currentPath());
-    QFile file(path + "/tmp.xml");
+    QFile file(dir.currentPath() + "/tmp.xml");
 
     // partie client TCP
     file.open(QIODevice::WriteOnly);
