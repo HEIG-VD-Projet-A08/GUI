@@ -248,9 +248,6 @@ void ProtProp::on_btn_save_res_clicked()
 	//on sauvegarde les valeurs x (results) et y (test et predict) pour chaque itération ainsi que le batch de mots utilisés pour calculer ceux-ci
     std::ofstream myFile;
 	
-	
-    QString filename;
-    QString path;
 
 
     QString filePath = QFileDialog::getSaveFileName(this, tr("Sauvegarder les résultats"), "", tr("results (*.csv);;All Files (*)"));
