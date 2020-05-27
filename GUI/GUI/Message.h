@@ -36,7 +36,7 @@ public:
     void Error_6(QString erreurType){
         QMessageBox::warning(0, QString("Erreur #6"), QString("Le Parsing XML de temp.xml a échoué avec cette erreur: " + erreurType));
     }
-s
+
     void indication_0(){
         QMessageBox::information(0, QString("Indication #0"), QString("Le programme va être exécuté."));
     }
