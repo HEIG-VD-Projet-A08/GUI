@@ -360,9 +360,12 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
 
     file.close();
 
-    if (Rxml.hasError())
-        message->Error_7(Rxml.errorString());
-    else if (file.error() != QFile::NoError){
+
+    if (Rxml.hasError()){
+       std::cerr << "Error: Failed to parse file "
+                 << qPrintable("temp.xml") << ": "
+                 << qPrintable(Rxml.errorString()) << std::endl;
+    }else if (file.error() != QFile::NoError){
         std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
                   << ": " << qPrintable(file.errorString())
                   << std::endl;
