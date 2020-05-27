@@ -292,7 +292,7 @@ void ProtProp::on_btn_save_res_clicked()
  */
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
-    QString it = "-1";
+    QString it = "0";
     QString test;
     QString predict;
     ReadXMLFile(it, test, predict, word);
