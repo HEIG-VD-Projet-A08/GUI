@@ -76,9 +76,9 @@ void ProtProp::on_btn_run_clicked()
     }
 
     // contrôle des bornes des paramètres entrés
-    if(nbIter.toInt() < 1 || nbIter.toInt() > 100 ||
+    if(nbIter.toInt() < 1 || nbIter.toInt() > 1000 ||
             nbWords.toInt() < 1 || nbWords.toInt() > 100 ||
-            port.toInt() < 1024 ||
+            port.toInt() < 1024 || port.toInt() > 65535 ||
             nbCharsMax.toInt() > 49 || nbCharsMin.toInt() < 10 ||
             nbCharsMin.toInt() > nbCharsMax.toInt() ){
         message->Error_1();
