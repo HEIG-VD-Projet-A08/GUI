@@ -125,13 +125,11 @@ void ProtProp::on_btn_run_clicked()
     }
     message->indication_0();
 
-    //start prog with variables above
-    //have to send some of those informations to the server to run the algo
-    //wait for the algo to start sending us results
 
-    //then, get results in a container and show them on the graph
-    int sizeX = nbIter.toInt(); //length of X axis, represents the number of iterations
-    int sizeY = 100; //length of Y axis, represents success rate
+	
+	//Après avoir envoyé les paramètres au serveur, on commence à construire note zone de graphique, on va ensuite atteindre les résultats du serveur pour commencer à dessiner nos graphes
+    int sizeX = nbIter.toInt(); //taille de l'axe des X, représente le nombre d'itérations, sera adapté au paramètre correspondant rentré
+    int sizeY = 100; //représente le résultat obtenu en pourcentage pour chaque graphe, est donc de taille fixe (100)
 
     contX.clear();
     contY1.clear();
@@ -143,10 +141,10 @@ void ProtProp::on_btn_run_clicked()
     ui->widget->setInteraction(QCP::iRangeZoom, true);
     ui->widget->addGraph();
     ui->widget->addGraph();
-    // give the axes some labels:
+    //donne un label aux axes:
     ui->widget->xAxis->setLabel("iterations");
     ui->widget->yAxis->setLabel("success rate");
-    // set axes ranges, so we see all data:
+    //fixe la portée des axes
     ui->widget->xAxis->setRange(0, sizeX);
     ui->widget->yAxis->setRange(0, sizeY);
     ui->widget->replot();
@@ -155,8 +153,8 @@ void ProtProp::on_btn_run_clicked()
 }
 
 /**
- * @brief ProtProp::showPointToolTip
- * @param event
+ * @brief ProtProp::showPointToolTip Permet d'afficher les coordonnées du point sur le graphique sur lequel on passe note souris
+ * @param event Evénement qui va permettre de récupérer les coordonnées de notre curseur
  */
 void ProtProp::showPointToolTip(QMouseEvent *event)
 {
@@ -169,7 +167,7 @@ void ProtProp::showPointToolTip(QMouseEvent *event)
 }
 
 /**
- * @brief ProtProp::updateGraphe mets à jour le graphique.
+ * @brief ProtProp::updateGraphe mets à jour le graphique à partir des valeurs récupérées dans le fichier XML du serveur.
  */
 void ProtProp::updateGraphe()
 {
@@ -241,8 +239,9 @@ void ProtProp::on_btn_save_res_clicked()
         return;
     }
 
-    //save results in a file
-    //save in a file (csv) x and y coordinates WITH the name of an individual (get it from the alg, best word in the 10words group of each iteration)
+
+	//sauvegarde les résultats obtenus dans un fichier CSV
+	//on sauvegarde les valeurs x (results) et y (test et predict) pour chaque itération ainsi que le batch de mots utilisés pour calculer ceux-ci
     std::ofstream myFile;
     myFile.open("savedResults.csv");
 
@@ -279,7 +278,7 @@ void ProtProp::on_plot_clicked()
         return;
     }
 
-    //Resets the view (usefull if we used the drag or the zoom feature)
+    //Recentre la vue et le zoom sur l'emplacement "de base"
     ui->widget->xAxis->setRange(0, nbIter.toInt());
     ui->widget->yAxis->setRange(0, 100);
     ui->widget->replot();
@@ -288,9 +287,9 @@ void ProtProp::on_plot_clicked()
 /**
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
- * @param x référence sur numéro de l'iération recue
- * @param y1 référence la première coordonnée Y du graph
- * @param y2 référence la deuxième coordonnée Y du graph
+ * @param x référence sur numéro de l'itération recue
+ * @param y1 référence la coordonnée Y du graphe test
+ * @param y2 référence la coordonnée Y du graphe predict
  * @param word référence sur les le batch de mot résultant pour cette itération
  */
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
@@ -309,10 +308,10 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QS
 
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
- * @param it référence sur numéro de l'iération recue
- * @param test référence la première coordonnée Y du graph
- * @param predict référence la deuxième coordonnée Y du graph
- * @param word référence sur les le batch de mot résultant pour cette itération
+ * @param it référence sur numéro de l'itération recue
+ * @param test référence la coordonnée Y du graphe test
+ * @param predict référence la coordonnée Y du graphe predict
+ * @param word référence sur les le batch de mots résultant pour cette itération
  */
 void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector<QString> &word)
 {
@@ -341,11 +340,11 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
                          Rxml.readNext();
                      }else if(Rxml.isStartElement()){
                          if(Rxml.name() == "it"){
-                            it = Rxml.readElementText();   //Get the xml value
+                            it = Rxml.readElementText();    //récupère la valeur xml
                          }else if(Rxml.name() == "test"){
-                            test = Rxml.readElementText();   //Get the xml value
+                            test = Rxml.readElementText();    //récupère la valeur xml
                          }else if(Rxml.name() == "predict"){
-                             predict = Rxml.readElementText(); //Get the xml value
+                             predict = Rxml.readElementText(); //récupère la valeur xml
                          }else if(Rxml.name() == "word"){
                              word.push_back(Rxml.readElementText());
                          }
