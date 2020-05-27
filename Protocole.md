@@ -2,14 +2,14 @@
 
 # Description 
 
-Ce protocole a pour but d'interfacer les différents acteurs de notre système, c'est à dire l'interface graphique qui va envoyer les paramètres donnés par l'utilisateur et recevoir des résultats, l'algorithme évolutif pour la génération de mot et l'algorithme pour traitement de ces résultats.
+Ce protocole a pour but d'interfacer les différents acteurs de notre système, c'est-à-dire l'interface graphique (qui va envoyer les paramètres donnés par l'utilisateur et recevoir les résultats de l'algorithme de recherche), et le serveur qui traitera les options et les commandes envoyées par l'interface.
 
-Le serveur sera implémenter de manière stateless. Les transferts d'options ou d'informations entre les deux parties se fera de manière sérialisée avec un fichier **.xml**. 
+Le serveur sera implémenté de manière stateless. Les transferts d'options ou d'informations entre les deux parties se fera de manière sérialisée par le biais de fichiers **.xml**. 
 
 # Établissement de la communication 
 
-Pour établir la connexion avec le serveur, Le client débutera la communication avec le message **Hello Server\n**.
-Nous ne gérons pas si plusieurs clients se connectent au serveur. À noter que le retour à la ligne après le Hello Server est attendu.
+Pour établir la connexion avec le serveur, le client débutera la communication avec le message **Hello Server\n**.
+Le serveur n'accepte qu'un seul client à la fois. À noter que le retour à la ligne après le Hello Server est attendu.
 
 ```sequence
 Client->>Server: Send "Hello Server"
@@ -17,7 +17,7 @@ Client->>Server: Send "Hello Server"
 
 # Commandes implémentées
 
-Pour toutes ces commandes on considère que le client à déjà début la communication.  
+Pour toutes les commandes suivantes, on considère que le client à déjà débuté la communication.  
 
 ## Début du processus (manque les options possibles)
 
@@ -51,7 +51,7 @@ Client->>Server: Send "STOP"
 
 ### Sans perte de données 
 
-Dans le cas ou le client ne veut pas perdre les résultats intermédiaires, Il peut envoyer la commande **STOP -R\n**  qui indiquera au serveur que nous allons recevoir encore un résultat. Ensuite seulement le client va envoyer **BYE\n** pour terminer la connexion. ce processus peut durer plusieurs minutes. car cela dépend de l'itération côté algorithme. À noter que les retour à la ligne après le STOP -R  et le BYE sont attendu.
+Dans le cas ou le client ne veut pas perdre les résultats intermédiaires, Il peut envoyer la commande **STOP -R\n**  qui indiquera au serveur qu'il doit envoyer le résultat de son itération en cours et ne pas en commencer une nouvelle. Ensuite seulement le client va envoyer **BYE\n** pour terminer la connexion. ce processus peut durer plusieurs minutes. car cela dépend de l'itération côté algorithme. À noter que les retour à la ligne après le STOP -R  et le BYE sont attendu.
 
 ```sequence
 Client->>Server: Send "STOP -R"
@@ -90,7 +90,7 @@ Client->>Server: Send "BYE"
 
 ## Commande Fausse ou erreur de paramètres
 
-Dans le cas ou le client enverrait une commande fausse, qui n'existe pas ou avec de mauvais paramètres, le serveur répondra avec le message **ERROR Bad Message** et terminera la connexion. Dans le cadre de la GUI cette commande n'est pas implémentée car il n'est pas possible de d'avoir des commandes qui sont fausses. 
+Dans le cas ou le client enverrait une commande fausse, qui n'existe pas ou avec de mauvais paramètres, le serveur répondra avec le message **ERROR Bad Message** et terminera la connexion. Dans le cadre de la GUI cette commande n'est pas implémentée car il n'est pas possible d'avoir des commandes qui sont fausses. 
 
 ```sequence
 Client->>Server: Send "RET"
