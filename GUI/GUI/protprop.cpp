@@ -292,22 +292,10 @@ void ProtProp::on_plot_clicked()
  * @param y1 référence la première coordonnée Y du graph
  * @param y2 référence la deuxième coordonnée Y du graph
  * @param word référence sur les le batch de mot résultant pour cette itération
- */void ClientTcp::readyRead()
-{
-    // read the data from the socket
-    QByteArray temp = socket->readAll();
-
-    QDir dir;
-    QFile file(dir.currentPath() + "/tmp.xml");
-
-    // partie client TCP
-    file.open(QIODevice::WriteOnly);
-    file.write(temp);
-    file.close();
-}
+ */
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
-    QString it = "0";
+    QString it = "-1";
     QString test;
     QString predict;
     ReadXMLFile(it, test, predict, word);
