@@ -20,7 +20,7 @@ ProtProp::ProtProp(QWidget *parent)
     // set validators for input
     QRegExpValidator *inputNumberChar   = new QRegExpValidator(  QRegExp("(?:[0-9]){2}"));
     QRegExpValidator *inputNumberPort   = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
-    QRegExpValidator *inputIteration    = new QRegExpValidator(  QRegExp("(?:[0-9]){5}"));
+    QRegExpValidator *inputIteration    = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
     QRegExpValidator *inputWordMax      = new QRegExpValidator(  QRegExp("(?:[0-9]){3}"));
     QRegExpValidator *ipValidator       = new QRegExpValidator(  QRegExp("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
 
@@ -87,7 +87,7 @@ void ProtProp::on_btn_run_clicked()
     QDir dir;
     QFile file(dir.currentPath() + "/option.xml");
 
-    // partie client TCP
+    // écriture du fichier de paramètres
     file.open(QIODevice::WriteOnly);
 
     QXmlStreamWriter xmlWriter(&file);
@@ -292,7 +292,19 @@ void ProtProp::on_plot_clicked()
  * @param y1 référence la première coordonnée Y du graph
  * @param y2 référence la deuxième coordonnée Y du graph
  * @param word référence sur les le batch de mot résultant pour cette itération
- */
+ */void ClientTcp::readyRead()
+{
+    // read the data from the socket
+    QByteArray temp = socket->readAll();
+
+    QDir dir;
+    QFile file(dir.currentPath() + "/tmp.xml");
+
+    // partie client TCP
+    file.open(QIODevice::WriteOnly);
+    file.write(temp);
+    file.close();
+}
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
     QString it = "0";
