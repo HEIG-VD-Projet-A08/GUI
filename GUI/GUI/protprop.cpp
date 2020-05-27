@@ -55,6 +55,8 @@ ProtProp::~ProtProp()
  */
 void ProtProp::on_btn_run_clicked()
 {
+    stopConnection = false;
+
     nbCharsMax  = ui->CharMax->text();
     nbCharsMin  = ui->CharMin->text();
     nbWords     = ui->nbWords->text();
@@ -213,6 +215,7 @@ void ProtProp::on_btn_stop_clicked()
     }
     socket->sendStop();
     quitAndResetRessources();
+    stopConnection = true;
 }
 
 /**
@@ -227,6 +230,7 @@ void ProtProp::on_btn_save_actual_clicked()
     }
     socket->sendStopRecovery();
     isStopRequested = true;
+    stopConnection = true;
 }
 
 /**
@@ -234,7 +238,7 @@ void ProtProp::on_btn_save_actual_clicked()
  */
 void ProtProp::on_btn_save_res_clicked()
 {
-    if (socket == nullptr){
+    if (socket == nullptr && !stopConnection){
         message->Error_5();
         return;
     }
@@ -243,45 +247,42 @@ void ProtProp::on_btn_save_res_clicked()
 	//sauvegarde les résultats obtenus dans un fichier CSV
 	//on sauvegarde les valeurs x (results) et y (test et predict) pour chaque itération ainsi que le batch de mots utilisés pour calculer ceux-ci
     std::ofstream myFile;
-    myFile.open("savedResults.csv");
+	
+	
+    QString filename;
+    QString path;
 
+
+    QString filePath = QFileDialog::getSaveFileName(this, tr("Sauvegarder les résultats"), "", tr("results (*.csv);;All Files (*)"));
+
+
+
+
+    myFile.open(filePath.toStdString());
+
+	
     std::ostringstream textToWriteOSS;
 
     textToWriteOSS << "iteration, test, predict";
-    for(int i = 1; i <= nbWords; i++){
-        textToWriteOSS << "mot" << i << ", ";
+    for(int i = 1; i <= nbWords.toInt(); i++){
+        textToWriteOSS << ", mot" << i;
     }
-    textToWriteOSS << "\n";
+
+    textToWriteOSS << ";\n";
     for(int i = 0; i < contX.size(); i++){
         QVector<QString> word = words[i];
 
-        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i] << ";\n";
+        textToWriteOSS << "" << contX[i] << ", " << contY1[i] << ", " << contY2[i];
 
         for(int j = 0; j < word.size(); j++){
-            std::string wordString = word[j].toStdString();
-            textToWriteOSS << wordString << ", ";
+            textToWriteOSS << ", " << word[j].toStdString();
         }
+        textToWriteOSS << ";\n";
     }
     std::string textToWrite = textToWriteOSS.str();
 
     myFile << textToWrite;
     myFile.close();
-}
-
-/**
- * @brief ProtProp::on_plot_clicked, Reset la vue et le zoom.
- */
-void ProtProp::on_plot_clicked()
-{
-    if (socket == nullptr){
-        message->Error_5();
-        return;
-    }
-
-    //Recentre la vue et le zoom sur l'emplacement "de base"
-    ui->widget->xAxis->setRange(0, nbIter.toInt());
-    ui->widget->yAxis->setRange(0, 100);
-    ui->widget->replot();
 }
 
 /**
@@ -294,7 +295,7 @@ void ProtProp::on_plot_clicked()
  */
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
-    QString it = "0";
+    QString it = "-1";
     QString test;
     QString predict;
     ReadXMLFile(it, test, predict, word);
