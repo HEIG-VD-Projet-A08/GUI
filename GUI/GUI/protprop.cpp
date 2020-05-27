@@ -121,7 +121,6 @@ void ProtProp::on_btn_run_clicked()
     if(!socket->sendGreetings())
         socket->sendData(file);
     else{
-        message->Error_4();
         socket = nullptr;
         return;
     }
