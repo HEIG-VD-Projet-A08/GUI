@@ -252,7 +252,7 @@ void ProtProp::on_btn_save_res_clicked()
 
     QString filePath = QFileDialog::getSaveFileName(this, tr("Sauvegarder les résultats"), "", tr("results (*.csv);;All Files (*)"));
 
-
+	filePath += ".csv";
 
 
     myFile.open(filePath.toStdString());
