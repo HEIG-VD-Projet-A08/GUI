@@ -8,7 +8,6 @@
 #include <QRegExpValidator>
 #include "Message.h"
 
-
 /**
  * @brief ProtProp::ProtProp définit les regex pour les paramètres,
  * @param parent parent de l'objet
@@ -41,6 +40,9 @@ ProtProp::ProtProp(QWidget *parent)
     ui->port->setText("9001");
 }
 
+/**
+ * @brief ProtProp::~ProtProp destructeur de la classe
+ */
 ProtProp::~ProtProp()
 {
     delete ui;
@@ -60,13 +62,22 @@ void ProtProp::on_btn_run_clicked()
     port        = ui->port->text();
 
     // test que les arguments soient tous rempli
-    if (nbCharsMax == "" || nbWords == "" || nbIter == "" || nbCharsMin == "" || ip == "" || port == "" ){
+    if (nbCharsMax == "" ||
+            nbWords == "" ||
+            nbIter == "" ||
+            nbCharsMin == "" ||
+            ip == "" ||
+            port == "" ){
         message->Error_0();
         return;
     }
 
     // contrôle des bornes des paramètres entrés
-    if(nbIter.toInt() < 1 || nbWords.toInt() < 1 || port.toInt() < 1024 || nbWords.toInt() > 100 || nbCharsMax.toInt() > 49 || nbCharsMin.toInt() > nbCharsMax.toInt() ){
+    if(nbIter.toInt() < 1 || nbIter.toInt() > 100 ||
+            nbWords.toInt() < 1 || nbWords.toInt() > 100 ||
+            port.toInt() < 1024 ||
+            nbCharsMax.toInt() > 49 || nbCharsMin.toInt() < 10 ||
+            nbCharsMin.toInt() > nbCharsMax.toInt() ){
         message->Error_1();
         return;
     }
@@ -142,6 +153,10 @@ void ProtProp::on_btn_run_clicked()
     connect(ui->widget, SIGNAL(mouseMove(QMouseEvent*)), this, SLOT(showPointToolTip(QMouseEvent*)));
 }
 
+/**
+ * @brief ProtProp::showPointToolTip
+ * @param event
+ */
 void ProtProp::showPointToolTip(QMouseEvent *event)
 {
     int x = ui->widget->xAxis->pixelToCoord(event->pos().x());
@@ -152,6 +167,9 @@ void ProtProp::showPointToolTip(QMouseEvent *event)
     setToolTip(QString("%1 , %2").arg(x).arg(y));
 }
 
+/**
+ * @brief ProtProp::updateGraphe mets à jour le graphique.
+ */
 void ProtProp::updateGraphe()
 {
     double x;
@@ -269,6 +287,10 @@ void ProtProp::on_plot_clicked()
 /**
  * @brief ProtProp::getValuesFromServer, Récupère les informations du fichier XML et les copies. 
  * On supprime également le fichier XML afin d'atteindre correctement le prochain
+ * @param x référence sur numéro de l'iération recue
+ * @param y1 référence la première coordonnée Y du graph
+ * @param y2 référence la deuxième coordonnée Y du graph
+ * @param word référence sur les le batch de mot résultant pour cette itération
  */
 void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QString> &word)
 {
@@ -286,6 +308,10 @@ void ProtProp::getValuesFromServer(double &x, double &y1, double &y2, QVector<QS
 
 /**
  * @brief ProtProp::ReadXMLFile, Parse le fichier XML afin de récupérer le numéro d'itération ainsi que le score de test et predict
+ * @param it référence sur numéro de l'iération recue
+ * @param test référence la première coordonnée Y du graph
+ * @param predict référence la deuxième coordonnée Y du graph
+ * @param word référence sur les le batch de mot résultant pour cette itération
  */
 void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector<QString> &word)
 {
@@ -334,9 +360,9 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
     file.close();
 
     if (Rxml.hasError())
-        message->Error_6(Rxml.errorString());
-    else if (file.error() != QFile::NoError)
-        message->Error_7(file.errorString());
+        message->Error_7(Rxml.errorString());
+    else if (file.error() != QFile::NoError && !isStopRequested)
+        message->Error_8(file.errorString());
 
 
     // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp
