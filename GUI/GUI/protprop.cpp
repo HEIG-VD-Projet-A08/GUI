@@ -2,6 +2,7 @@
 #include "protprop.h"
 #include "./ui_protprop.h"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <unistd.h>
 #include <QXmlStreamReader>
@@ -361,8 +362,11 @@ void ProtProp::ReadXMLFile(QString &it, QString &test, QString &predict, QVector
 
     if (Rxml.hasError())
         message->Error_7(Rxml.errorString());
-    else if (file.error() != QFile::NoError && !isStopRequested)
-        message->Error_8(file.errorString());
+    else if (file.error() != QFile::NoError){
+        std::cerr << "Error: Cannot read file " << qPrintable("temp.xml")
+                  << ": " << qPrintable(file.errorString())
+                  << std::endl;
+    }
 
 
     // si un arrêt est demandé, on traite les dernière données et on ferme le client tcp
